@@ -64,6 +64,21 @@ const menuItems = [
     ],
   },
   {
+    id: "admin-user",
+    label: "User Administration",
+    icon: Users,
+    children: [
+      { id: "user-creation", label: "User Creation & Deactivation" },
+      { id: "rbac", label: "Role-Based Access Control" },
+      { id: "audit-team-mgmt", label: "Audit Team Management" },
+      { id: "password-reset", label: "Password Reset / Unlock" },
+      { id: "mfa-setup", label: "Multi-Factor Authentication" },
+      { id: "login-history", label: "Login History & Audit Logs" },
+      { id: "session-mgmt", label: "Session Management" },
+      { id: "inactive-cleanup", label: "Inactive User Cleanup" },
+    ],
+  },
+  {
     id: "system-admin",
     label: "System Administration",
     icon: Settings,
