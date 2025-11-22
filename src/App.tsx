@@ -29,6 +29,15 @@ import { ActionTrail } from "./components/pages/ActionTrail";
 import { SecurityLogs } from "./components/pages/SecurityLogs";
 import { LoginSessions } from "./components/pages/LoginSessions";
 import { UsageAnalytics } from "./components/pages/UsageAnalytics";
+import { QuarterlyPlan } from "./components/pages/QuarterlyPlan";
+import { AuditPrograms } from "./components/pages/AuditPrograms";
+import { ControlAreas } from "./components/pages/ControlAreas";
+import { RiskMatrix } from "./components/pages/RiskMatrix";
+import { AccessControl } from "./components/pages/AccessControl";
+import { AuditTrails } from "./components/pages/AuditTrails";
+import { SystemSettings } from "./components/pages/SystemSettings";
+import { HelpDocs } from "./components/pages/HelpDocs";
+import { FAQ } from "./components/pages/FAQ";
 import { JobScheduler } from "./components/pages/JobScheduler";
 
 const queryClient = new QueryClient();
@@ -47,18 +56,26 @@ const App = () => (
             {/* Audit Planner */}
             <Route path="annual-plan" element={<AnnualAuditPlan />} />
             <Route path="monthly-plan" element={<MonthlyAuditPlan />} />
+            <Route path="quarterly-plan" element={<QuarterlyPlan />} />
             
             {/* Master Data */}
             <Route path="audit-entities" element={<AuditEntities />} />
             <Route path="control-types" element={<ControlTypes />} />
             <Route path="audit-concerns" element={<AuditConcerns />} />
+            <Route path="audit-programs" element={<AuditPrograms />} />
+            <Route path="control-areas" element={<ControlAreas />} />
             
             {/* Risk Management */}
             <Route path="risk-assessments" element={<RiskAssessments />} />
+            <Route path="risk-matrix" element={<RiskMatrix />} />
             
             {/* Team Management */}
             <Route path="team-members" element={<TeamMembers />} />
             <Route path="create-team" element={<CreateTeam />} />
+            
+            {/* Security & Compliance */}
+            <Route path="access-control" element={<AccessControl />} />
+            <Route path="audit-trails" element={<AuditTrails />} />
             
             {/* User Administration */}
             <Route path="admin-user" element={<UserAdministration />} />
@@ -81,6 +98,11 @@ const App = () => (
             
             {/* System Administration */}
             <Route path="job-scheduler" element={<JobScheduler />} />
+            <Route path="system-settings" element={<SystemSettings />} />
+            
+            {/* Support & Maintenance */}
+            <Route path="help-docs" element={<HelpDocs />} />
+            <Route path="faq" element={<FAQ />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
