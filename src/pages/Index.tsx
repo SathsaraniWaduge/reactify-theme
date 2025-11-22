@@ -7,6 +7,13 @@ import { AIChat } from "@/components/AIChat";
 import { AuditEntities } from "@/components/pages/AuditEntities";
 import { TeamMembers } from "@/components/pages/TeamMembers";
 import { RiskAssessments } from "@/components/pages/RiskAssessments";
+import { UserAdministration } from "@/components/pages/UserAdministration";
+import { UserCreation } from "@/components/pages/UserCreation";
+import { RBAC } from "@/components/pages/RBAC";
+import { MFASetup } from "@/components/pages/MFASetup";
+import { LoginHistory } from "@/components/pages/LoginHistory";
+import { SessionManagement } from "@/components/pages/SessionManagement";
+import { InactiveUserCleanup } from "@/components/pages/InactiveUserCleanup";
 import { AnnualAuditPlan } from "@/components/pages/AnnualAuditPlan";
 import { MonthlyAuditPlan } from "@/components/pages/MonthlyAuditPlan";
 import { ControlTypes } from "@/components/pages/ControlTypes";
@@ -49,6 +56,20 @@ const Index = () => {
         return <RiskAssessments />;
       case "job-scheduler":
         return <JobScheduler />;
+      case "admin-user":
+        return <UserAdministration onNavigate={setActivePage} />;
+      case "user-creation":
+        return <UserCreation />;
+      case "rbac":
+        return <RBAC />;
+      case "mfa-setup":
+        return <MFASetup />;
+      case "login-history":
+        return <LoginHistory />;
+      case "session-mgmt":
+        return <SessionManagement />;
+      case "inactive-cleanup":
+        return <InactiveUserCleanup />;
       // Add more cases for other pages as needed
       default:
         return (
