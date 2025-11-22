@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle, Activity, Search as SearchIcon, Bell } from "lucide-react";
+import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle, Activity, Search as SearchIcon, Bell, BarChart3 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -117,6 +117,17 @@ const menuItems = [
     children: [
       { id: "job-scheduler", path: "/job-scheduler", label: "Job Scheduler" },
       { id: "system-settings", path: "/system-settings", label: "System Settings" },
+    ],
+  },
+  {
+    id: "reporting-exports",
+    label: "Reporting & Exports",
+    icon: BarChart3,
+    children: [
+      { id: "predefined-reports", path: "/predefined-reports", label: "Predefined Reports" },
+      { id: "custom-report-builder", path: "/custom-report-builder", label: "Custom Report Builder" },
+      { id: "scheduled-reports", path: "/scheduled-reports", label: "Scheduled Reports" },
+      { id: "export-logs", path: "/export-logs", label: "Export Logs" },
     ],
   },
   {
