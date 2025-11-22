@@ -46,6 +46,10 @@ import { SystemSettings } from "./components/pages/SystemSettings";
 import { HelpDocs } from "./components/pages/HelpDocs";
 import { FAQ } from "./components/pages/FAQ";
 import { JobScheduler } from "./components/pages/JobScheduler";
+import PredefinedReports from "./components/pages/PredefinedReports";
+import CustomReportBuilder from "./components/pages/CustomReportBuilder";
+import ScheduledReports from "./components/pages/ScheduledReports";
+import ExportLogs from "./components/pages/ExportLogs";
 
 const queryClient = new QueryClient();
 
@@ -117,6 +121,12 @@ const App = () => (
             {/* System Administration */}
             <Route path="job-scheduler" element={<JobScheduler />} />
             <Route path="system-settings" element={<SystemSettings />} />
+            
+            {/* Reporting & Exports */}
+            <Route path="predefined-reports" element={<PredefinedReports />} />
+            <Route path="custom-report-builder" element={<CustomReportBuilder />} />
+            <Route path="scheduled-reports" element={<ScheduledReports />} />
+            <Route path="export-logs" element={<ExportLogs />} />
             
             {/* Support & Maintenance */}
             <Route path="help-docs" element={<HelpDocs />} />
