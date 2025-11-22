@@ -110,7 +110,7 @@ export const Sidebar = ({ activePage, onPageChange }: SidebarProps) => {
   };
 
   return (
-    <aside className="w-70 bg-gradient-to-b from-black to-[#111] text-white overflow-y-auto h-[calc(100vh-74px)] sticky top-[74px] shadow-2xl">
+    <aside className="w-[280px] flex-shrink-0 bg-gradient-to-b from-black to-[#111] text-white overflow-y-auto h-[calc(100vh-74px)] sticky top-[74px] shadow-2xl">
       <div className="p-4 space-y-4">
         {/* Search */}
         <div>

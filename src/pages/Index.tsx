@@ -110,9 +110,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader onLogout={handleLogout} />
-      <div className="flex">
+      <div className="flex w-full">
         <Sidebar activePage={activePage} onPageChange={setActivePage} />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 min-w-0 overflow-y-auto">
           {renderPage()}
         </main>
       </div>
