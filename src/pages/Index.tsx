@@ -20,6 +20,8 @@ import { ControlTypes } from "@/components/pages/ControlTypes";
 import { AuditConcerns } from "@/components/pages/AuditConcerns";
 import { CreateTeam } from "@/components/pages/CreateTeam";
 import { JobScheduler } from "@/components/pages/JobScheduler";
+import { PasswordReset } from "@/components/pages/PasswordReset";
+import { AuditTeamManagement } from "@/components/pages/AuditTeamManagement";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -70,6 +72,10 @@ const Index = () => {
         return <SessionManagement />;
       case "inactive-cleanup":
         return <InactiveUserCleanup />;
+      case "password-reset":
+        return <PasswordReset />;
+      case "audit-team-mgmt":
+        return <AuditTeamManagement />;
       // Add more cases for other pages as needed
       default:
         return (

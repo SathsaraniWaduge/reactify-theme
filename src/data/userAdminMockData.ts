@@ -298,3 +298,152 @@ export const inactiveUsers = [
     status: "Inactive",
   },
 ];
+
+// Password Reset Mock Data
+export const passwordResetStats = {
+  resetRequestsToday: 5,
+  lockedAccounts: 3,
+  pendingApprovals: 2,
+  completedToday: 8,
+};
+
+export const lockedAccounts = [
+  {
+    user: "USR-024 (Thomas Anderson)",
+    department: "IT",
+    lockReason: "Multiple failed login attempts",
+    lockedSince: "2025-09-07 09:15",
+    failedAttempts: 5,
+  },
+  {
+    user: "USR-067 (Emily Parker)",
+    department: "Finance",
+    lockReason: "Multiple failed login attempts",
+    lockedSince: "2025-09-07 08:42",
+    failedAttempts: 6,
+  },
+  {
+    user: "USR-091 (Richard Chen)",
+    department: "Audit",
+    lockReason: "Security policy violation",
+    lockedSince: "2025-09-06 16:30",
+    failedAttempts: 4,
+  },
+];
+
+export const recentPasswordResets = [
+  {
+    user: "USR-015 (Sarah Martinez)",
+    requestedBy: "Self Service",
+    requestDate: "2025-09-07 10:15",
+    approvedBy: "Admin",
+    completedDate: "2025-09-07 10:18",
+    status: "Completed",
+  },
+  {
+    user: "USR-033 (Michael Zhang)",
+    requestedBy: "Helpdesk",
+    requestDate: "2025-09-07 09:30",
+    approvedBy: "System",
+    completedDate: "2025-09-07 09:32",
+    status: "Completed",
+  },
+  {
+    user: "USR-058 (Jennifer Williams)",
+    requestedBy: "Self Service",
+    requestDate: "2025-09-07 09:00",
+    approvedBy: "Pending",
+    completedDate: "-",
+    status: "Pending",
+  },
+];
+
+// Audit Team Management Mock Data
+export const auditTeamStats = {
+  totalTeams: 12,
+  activeAuditors: 45,
+  teamsInField: 8,
+  availableAuditors: 15,
+};
+
+export const auditTeams = [
+  {
+    teamId: "TEAM-001",
+    teamName: "Branch Audit Team A",
+    teamLeader: "John Smith",
+    members: 5,
+    category: "Operation",
+    currentEngagement: "Branch-Colombo-2025-Q3",
+    status: "Active",
+  },
+  {
+    teamId: "TEAM-002",
+    teamName: "IT Audit Team",
+    teamLeader: "Sarah Johnson",
+    members: 4,
+    category: "IS",
+    currentEngagement: "IT-Security-2025-Q3",
+    status: "Active",
+  },
+  {
+    teamId: "TEAM-003",
+    teamName: "Credit Audit Team",
+    teamLeader: "Robert Williams",
+    members: 6,
+    category: "Credit",
+    currentEngagement: "Credit-Review-2025-Q3",
+    status: "Active",
+  },
+  {
+    teamId: "TEAM-004",
+    teamName: "Branch Audit Team B",
+    teamLeader: "Mary Brown",
+    members: 5,
+    category: "Operation",
+    currentEngagement: "-",
+    status: "Available",
+  },
+];
+
+export const availableAuditors = [
+  {
+    auditorId: "USR-101",
+    name: "David Miller",
+    email: "david.m@boc.lk",
+    department: "Audit",
+    specialization: "Financial Auditing",
+    certification: "CIA, CPA",
+    experience: "8 years",
+    currentStatus: "Available",
+  },
+  {
+    auditorId: "USR-102",
+    name: "Lisa Garcia",
+    email: "lisa.g@boc.lk",
+    department: "Audit",
+    specialization: "IT Audit",
+    certification: "CISA, CISSP",
+    experience: "6 years",
+    currentStatus: "Available",
+  },
+  {
+    auditorId: "USR-103",
+    name: "Thomas Davis",
+    email: "thomas.d@boc.lk",
+    department: "Audit",
+    specialization: "Operational Audit",
+    certification: "CIA",
+    experience: "5 years",
+    currentStatus: "Available",
+  },
+  {
+    auditorId: "USR-104",
+    name: "Jennifer Wilson",
+    email: "jennifer.w@boc.lk",
+    department: "Audit",
+    specialization: "Compliance Audit",
+    certification: "CRMA",
+    experience: "7 years",
+    currentStatus: "On Assignment",
+  },
+];
