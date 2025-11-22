@@ -1,13 +1,10 @@
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { userAdminStats, recentUserActivity } from "@/data/userAdminMockData";
 import { Badge } from "@/components/ui/badge";
-import { Users, Shield, Lock, History, AlertTriangle, Activity, UserX, KeyRound } from "lucide-react";
+import { Users, Shield, Lock, History, Activity, UserX, KeyRound } from "lucide-react";
 
-interface UserAdministrationProps {
-  onNavigate: (page: string) => void;
-}
-
-export const UserAdministration = ({ onNavigate }: UserAdministrationProps) => {
+export const UserAdministration = () => {
   const modules = [
     {
       id: "user-creation",
@@ -101,16 +98,11 @@ export const UserAdministration = ({ onNavigate }: UserAdministrationProps) => {
 
       {/* Module Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {modules.map((module) => {
-          const Icon = module.icon;
-          return (
-            <Card
-              key={module.id}
-              className="hover:shadow-xl transition-all cursor-pointer hover:-translate-y-1"
-              onClick={() => onNavigate(module.id)}
-            >
+        {modules.map((module) => (
+          <Link key={module.id} to={`/${module.id}`}>
+            <Card className="hover:shadow-xl transition-all cursor-pointer hover:-translate-y-1 h-full">
               <CardContent className="p-5">
-                <Icon className="h-8 w-8 text-gold mb-3" />
+                <module.icon className="h-8 w-8 text-gold mb-3" />
                 <h3 className="font-semibold mb-2">{module.title}</h3>
                 <p className="text-sm text-muted-foreground mb-3">{module.description}</p>
                 <div className="text-gold text-sm font-semibold hover:underline">
@@ -118,8 +110,8 @@ export const UserAdministration = ({ onNavigate }: UserAdministrationProps) => {
                 </div>
               </CardContent>
             </Card>
-          );
-        })}
+          </Link>
+        ))}
       </div>
 
       {/* Recent User Activity */}
