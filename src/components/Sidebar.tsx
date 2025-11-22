@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle, Activity } from "lucide-react";
+import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle, Activity, Search as SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -74,6 +74,16 @@ const menuItems = [
       { id: "login-history", path: "/login-history", label: "Login History & Audit Logs" },
       { id: "session-mgmt", path: "/session-mgmt", label: "Session Management" },
       { id: "inactive-cleanup", path: "/inactive-cleanup", label: "Inactive User Cleanup" },
+    ],
+  },
+  {
+    id: "audit-execution",
+    label: "Audit Execution",
+    icon: SearchIcon,
+    children: [
+      { id: "fieldwork-planner", path: "/fieldwork-planner", label: "Audit Fieldwork Planner" },
+      { id: "audit-fieldworks", path: "/audit-fieldworks", label: "Audit Fieldworks" },
+      { id: "audit-samples", path: "/audit-samples", label: "Audit Samples" },
     ],
   },
   {

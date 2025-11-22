@@ -29,6 +29,9 @@ import { ActionTrail } from "./components/pages/ActionTrail";
 import { SecurityLogs } from "./components/pages/SecurityLogs";
 import { LoginSessions } from "./components/pages/LoginSessions";
 import { UsageAnalytics } from "./components/pages/UsageAnalytics";
+import { FieldworkPlanner } from "./components/pages/FieldworkPlanner";
+import { AuditFieldworks } from "./components/pages/AuditFieldworks";
+import { AuditSamples } from "./components/pages/AuditSamples";
 import { QuarterlyPlan } from "./components/pages/QuarterlyPlan";
 import { AuditPrograms } from "./components/pages/AuditPrograms";
 import { ControlAreas } from "./components/pages/ControlAreas";
@@ -95,6 +98,11 @@ const App = () => (
             <Route path="security-logs" element={<SecurityLogs />} />
             <Route path="login-sessions" element={<LoginSessions />} />
             <Route path="usage-analytics" element={<UsageAnalytics />} />
+            
+            {/* Audit Execution */}
+            <Route path="fieldwork-planner" element={<FieldworkPlanner />} />
+            <Route path="audit-fieldworks" element={<AuditFieldworks />} />
+            <Route path="audit-samples" element={<AuditSamples />} />
             
             {/* System Administration */}
             <Route path="job-scheduler" element={<JobScheduler />} />
