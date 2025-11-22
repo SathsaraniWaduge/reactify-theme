@@ -7,6 +7,12 @@ import { AIChat } from "@/components/AIChat";
 import { AuditEntities } from "@/components/pages/AuditEntities";
 import { TeamMembers } from "@/components/pages/TeamMembers";
 import { RiskAssessments } from "@/components/pages/RiskAssessments";
+import { AnnualAuditPlan } from "@/components/pages/AnnualAuditPlan";
+import { MonthlyAuditPlan } from "@/components/pages/MonthlyAuditPlan";
+import { ControlTypes } from "@/components/pages/ControlTypes";
+import { AuditConcerns } from "@/components/pages/AuditConcerns";
+import { CreateTeam } from "@/components/pages/CreateTeam";
+import { JobScheduler } from "@/components/pages/JobScheduler";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,12 +31,24 @@ const Index = () => {
     switch (activePage) {
       case "dashboard":
         return <Dashboard />;
+      case "annual-plan":
+        return <AnnualAuditPlan />;
+      case "monthly-plan":
+        return <MonthlyAuditPlan />;
       case "audit-entities":
         return <AuditEntities />;
+      case "control-types":
+        return <ControlTypes />;
+      case "audit-concerns":
+        return <AuditConcerns />;
       case "team-members":
         return <TeamMembers />;
+      case "create-team":
+        return <CreateTeam />;
       case "risk-assessments":
         return <RiskAssessments />;
+      case "job-scheduler":
+        return <JobScheduler />;
       // Add more cases for other pages as needed
       default:
         return (
@@ -39,19 +57,21 @@ const Index = () => {
               {activePage.split("-").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
             </h1>
             <div className="bg-gradient-to-br from-gold/10 to-gold-light/10 p-12 rounded-2xl text-center">
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-muted-foreground mb-6">
                 This section is under development. The complete system includes:
               </p>
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-left max-w-2xl mx-auto">
                 <ul className="space-y-2">
-                  <li>✓ Audit Planning (Annual, Monthly, Quarterly)</li>
-                  <li>✓ Master Data Management</li>
-                  <li>✓ Risk Assessments & Control Areas</li>
+                  <li>✓ Annual & Monthly Audit Plans</li>
+                  <li>✓ Audit Entities Management</li>
+                  <li>✓ Control Types & Concerns</li>
+                  <li>✓ Risk Assessments & Matrix</li>
                   <li>✓ Team Management</li>
                 </ul>
                 <ul className="space-y-2">
-                  <li>✓ Security & Compliance</li>
-                  <li>✓ Job Scheduling</li>
+                  <li>✓ Job Scheduling & Automation</li>
+                  <li>✓ Security & Access Control</li>
+                  <li>✓ Audit Trails & Logging</li>
                   <li>✓ Reports & Analytics</li>
                   <li>✓ Support & Documentation</li>
                 </ul>
