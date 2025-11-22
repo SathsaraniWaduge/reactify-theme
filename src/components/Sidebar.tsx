@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle } from "lucide-react";
+import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle, Activity } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -76,6 +76,18 @@ const menuItems = [
       { id: "login-history", label: "Login History & Audit Logs" },
       { id: "session-mgmt", label: "Session Management" },
       { id: "inactive-cleanup", label: "Inactive User Cleanup" },
+    ],
+  },
+  {
+    id: "monitoring-audit",
+    label: "Monitoring & Audit",
+    icon: Activity,
+    children: [
+      { id: "activity-logs", label: "System Activity Logs" },
+      { id: "action-trail", label: "User Action Trail" },
+      { id: "security-logs", label: "Security Event Logs" },
+      { id: "login-sessions", label: "Login Sessions" },
+      { id: "usage-analytics", label: "Usage Analytics" },
     ],
   },
   {

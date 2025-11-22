@@ -22,6 +22,12 @@ import { CreateTeam } from "@/components/pages/CreateTeam";
 import { JobScheduler } from "@/components/pages/JobScheduler";
 import { PasswordReset } from "@/components/pages/PasswordReset";
 import { AuditTeamManagement } from "@/components/pages/AuditTeamManagement";
+import { MonitoringAudit } from "@/components/pages/MonitoringAudit";
+import { ActivityLogs } from "@/components/pages/ActivityLogs";
+import { ActionTrail } from "@/components/pages/ActionTrail";
+import { SecurityLogs } from "@/components/pages/SecurityLogs";
+import { LoginSessions } from "@/components/pages/LoginSessions";
+import { UsageAnalytics } from "@/components/pages/UsageAnalytics";
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -76,6 +82,18 @@ const Index = () => {
         return <PasswordReset />;
       case "audit-team-mgmt":
         return <AuditTeamManagement />;
+      case "monitoring-audit":
+        return <MonitoringAudit onNavigate={setActivePage} />;
+      case "activity-logs":
+        return <ActivityLogs />;
+      case "action-trail":
+        return <ActionTrail />;
+      case "security-logs":
+        return <SecurityLogs />;
+      case "login-sessions":
+        return <LoginSessions />;
+      case "usage-analytics":
+        return <UsageAnalytics />;
       // Add more cases for other pages as needed
       default:
         return (
