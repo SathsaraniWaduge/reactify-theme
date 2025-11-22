@@ -32,6 +32,10 @@ import { UsageAnalytics } from "./components/pages/UsageAnalytics";
 import { FieldworkPlanner } from "./components/pages/FieldworkPlanner";
 import { AuditFieldworks } from "./components/pages/AuditFieldworks";
 import { AuditSamples } from "./components/pages/AuditSamples";
+import { EmailSmsGateway } from "./components/pages/EmailSmsGateway";
+import { MessageTemplates } from "./components/pages/MessageTemplates";
+import { BroadcastAnnouncements } from "./components/pages/BroadcastAnnouncements";
+import { NotificationPreferences } from "./components/pages/NotificationPreferences";
 import { QuarterlyPlan } from "./components/pages/QuarterlyPlan";
 import { AuditPrograms } from "./components/pages/AuditPrograms";
 import { ControlAreas } from "./components/pages/ControlAreas";
@@ -103,6 +107,12 @@ const App = () => (
             <Route path="fieldwork-planner" element={<FieldworkPlanner />} />
             <Route path="audit-fieldworks" element={<AuditFieldworks />} />
             <Route path="audit-samples" element={<AuditSamples />} />
+            
+            {/* Notifications & Messages */}
+            <Route path="email-sms-gateway" element={<EmailSmsGateway />} />
+            <Route path="message-templates" element={<MessageTemplates />} />
+            <Route path="broadcast-announcements" element={<BroadcastAnnouncements />} />
+            <Route path="notification-preferences" element={<NotificationPreferences />} />
             
             {/* System Administration */}
             <Route path="job-scheduler" element={<JobScheduler />} />
