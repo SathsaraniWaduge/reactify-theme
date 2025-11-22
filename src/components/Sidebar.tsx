@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle, Activity, Search as SearchIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, Home, Calendar, FileText, Users, Shield, Settings, HelpCircle, Activity, Search as SearchIcon, Bell } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -97,6 +97,17 @@ const menuItems = [
       { id: "security-logs", path: "/security-logs", label: "Security Event Logs" },
       { id: "login-sessions", path: "/login-sessions", label: "Login Sessions" },
       { id: "usage-analytics", path: "/usage-analytics", label: "Usage Analytics" },
+    ],
+  },
+  {
+    id: "notifications-messages",
+    label: "Notifications & Messages",
+    icon: Bell,
+    children: [
+      { id: "email-sms-gateway", path: "/email-sms-gateway", label: "Email / SMS Gateway Setup" },
+      { id: "message-templates", path: "/message-templates", label: "Message Templates" },
+      { id: "broadcast-announcements", path: "/broadcast-announcements", label: "Broadcast Announcements" },
+      { id: "notification-preferences", path: "/notification-preferences", label: "Notification Preferences" },
     ],
   },
   {
