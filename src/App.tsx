@@ -40,6 +40,13 @@ import { QuarterlyPlan } from "./components/pages/QuarterlyPlan";
 import { AuditPrograms } from "./components/pages/AuditPrograms";
 import { ControlAreas } from "./components/pages/ControlAreas";
 import { RiskMatrix } from "./components/pages/RiskMatrix";
+import { RiskScoringEngine } from "./components/pages/RiskScoringEngine";
+import { RiskHeatMap } from "./components/pages/RiskHeatMap";
+import { PredictiveAnalytics } from "./components/pages/PredictiveAnalytics";
+import { RiskAppetiteFramework } from "./components/pages/RiskAppetiteFramework";
+import { RiskCorrelationAnalysis } from "./components/pages/RiskCorrelationAnalysis";
+import { EntityRiskProfiles } from "./components/pages/EntityRiskProfiles";
+import { RiskDashboard } from "./components/pages/RiskDashboard";
 import { AccessControl } from "./components/pages/AccessControl";
 import { AuditTrails } from "./components/pages/AuditTrails";
 import { SystemSettings } from "./components/pages/SystemSettings";
@@ -79,6 +86,13 @@ const App = () => (
             {/* Risk Management */}
             <Route path="risk-assessments" element={<RiskAssessments />} />
             <Route path="risk-matrix" element={<RiskMatrix />} />
+            <Route path="risk-scoring-engine" element={<RiskScoringEngine />} />
+            <Route path="risk-heat-map" element={<RiskHeatMap />} />
+            <Route path="predictive-analytics" element={<PredictiveAnalytics />} />
+            <Route path="risk-appetite" element={<RiskAppetiteFramework />} />
+            <Route path="risk-correlation" element={<RiskCorrelationAnalysis />} />
+            <Route path="entity-risk-profiles" element={<EntityRiskProfiles />} />
+            <Route path="risk-dashboard" element={<RiskDashboard />} />
             
             {/* Team Management */}
             <Route path="team-members" element={<TeamMembers />} />
