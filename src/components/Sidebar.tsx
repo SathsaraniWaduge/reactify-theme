@@ -38,6 +38,13 @@ const menuItems = [
     label: "Risk Management",
     icon: Shield,
     children: [
+      { id: "risk-dashboard", path: "/risk-dashboard", label: "Risk Dashboard" },
+      { id: "risk-scoring-engine", path: "/risk-scoring-engine", label: "Risk Scoring Engine" },
+      { id: "risk-heat-map", path: "/risk-heat-map", label: "Risk Heat Map" },
+      { id: "predictive-analytics", path: "/predictive-analytics", label: "Predictive Analytics" },
+      { id: "risk-appetite", path: "/risk-appetite", label: "Risk Appetite Framework" },
+      { id: "risk-correlation", path: "/risk-correlation", label: "Correlation Analysis" },
+      { id: "entity-risk-profiles", path: "/entity-risk-profiles", label: "Entity Risk Profiles" },
       { id: "risk-assessments", path: "/risk-assessments", label: "Risk Assessments" },
       { id: "risk-matrix", path: "/risk-matrix", label: "Risk Matrix" },
     ],
