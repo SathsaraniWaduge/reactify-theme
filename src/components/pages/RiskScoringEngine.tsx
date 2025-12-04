@@ -7,12 +7,12 @@ import { Slider } from "@/components/ui/slider";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { auditEntities, riskFactorWeights, riskDistribution } from "@/data/riskManagementMockData";
-import { Calculator, Settings, RefreshCw, Download, Search, Filter, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { auditEntities, riskFactorWeights, riskDistribution, entityTypeDistribution } from "@/data/riskManagementMockData";
+import { Calculator, Settings, RefreshCw, Download, Search, Building2, Server, Users, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export const RiskScoringEngine = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [entityTypeFilter, setEntityTypeFilter] = useState("all");
   const [riskFilter, setRiskFilter] = useState("all");
   const [weights, setWeights] = useState(riskFactorWeights.map(w => ({ ...w })));
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,9 +21,9 @@ export const RiskScoringEngine = () => {
   const filteredEntities = auditEntities.filter(entity => {
     const matchesSearch = entity.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           entity.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || entity.category === categoryFilter;
+    const matchesType = entityTypeFilter === "all" || entity.entityType === entityTypeFilter;
     const matchesRisk = riskFilter === "all" || entity.riskLevel === riskFilter;
-    return matchesSearch && matchesCategory && matchesRisk;
+    return matchesSearch && matchesType && matchesRisk;
   });
 
   const totalPages = Math.ceil(filteredEntities.length / itemsPerPage);
@@ -39,6 +39,15 @@ export const RiskScoringEngine = () => {
     }
   };
 
+  const getEntityTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Branch': return <Building2 className="h-4 w-4 text-blue-500" />;
+      case 'IT System': return <Server className="h-4 w-4 text-purple-500" />;
+      case 'High Value Customer': return <Users className="h-4 w-4 text-green-500" />;
+      default: return null;
+    }
+  };
+
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case 'increasing': return <TrendingUp className="h-4 w-4 text-red-500" />;
@@ -47,8 +56,6 @@ export const RiskScoringEngine = () => {
     }
   };
 
-  const categories = [...new Set(auditEntities.map(e => e.category))];
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -56,9 +63,9 @@ export const RiskScoringEngine = () => {
           <div className="text-sm text-muted-foreground mb-2">
             Dashboard / Risk Management / Risk Scoring Engine
           </div>
-          <h1 className="text-3xl font-bold">Risk Scoring Engine</h1>
+          <h1 className="text-3xl font-bold">BOC Risk Scoring Engine</h1>
           <p className="text-muted-foreground mt-1">
-            Automated continuous risk scoring for {auditEntities.length}+ audit entities using weighted multi-factor algorithm
+            Automated continuous risk scoring for {auditEntities.length} audit entities - Branches, IT Systems & High Value Customers
           </p>
         </div>
         <div className="flex gap-2">
@@ -74,35 +81,62 @@ export const RiskScoringEngine = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-blue-500" />
+              <div className="text-sm text-muted-foreground">Branches</div>
+            </div>
+            <div className="text-2xl font-bold text-blue-600">{entityTypeDistribution.branches}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Server className="h-4 w-4 text-purple-500" />
+              <div className="text-sm text-muted-foreground">IT Systems</div>
+            </div>
+            <div className="text-2xl font-bold text-purple-600">{entityTypeDistribution.itSystems}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-green-500" />
+              <div className="text-sm text-muted-foreground">HV Customers</div>
+            </div>
+            <div className="text-2xl font-bold text-green-600">{entityTypeDistribution.customers}</div>
+          </CardContent>
+        </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-sm text-muted-foreground">Total Entities</div>
-            <div className="text-3xl font-bold text-gold">{auditEntities.length}</div>
+            <div className="text-2xl font-bold text-gold">{auditEntities.length}</div>
           </CardContent>
         </Card>
         <Card className="border-red-200">
           <CardContent className="p-4">
             <div className="text-sm text-muted-foreground">Extreme Risk</div>
-            <div className="text-3xl font-bold text-red-600">{riskDistribution.extreme}</div>
+            <div className="text-2xl font-bold text-red-600">{riskDistribution.extreme}</div>
           </CardContent>
         </Card>
         <Card className="border-orange-200">
           <CardContent className="p-4">
             <div className="text-sm text-muted-foreground">High Risk</div>
-            <div className="text-3xl font-bold text-orange-500">{riskDistribution.high}</div>
+            <div className="text-2xl font-bold text-orange-500">{riskDistribution.high}</div>
           </CardContent>
         </Card>
         <Card className="border-yellow-200">
           <CardContent className="p-4">
             <div className="text-sm text-muted-foreground">Medium Risk</div>
-            <div className="text-3xl font-bold text-yellow-600">{riskDistribution.medium}</div>
+            <div className="text-2xl font-bold text-yellow-600">{riskDistribution.medium}</div>
           </CardContent>
         </Card>
         <Card className="border-green-200">
           <CardContent className="p-4">
             <div className="text-sm text-muted-foreground">Low Risk</div>
-            <div className="text-3xl font-bold text-green-600">{riskDistribution.low}</div>
+            <div className="text-2xl font-bold text-green-600">{riskDistribution.low}</div>
           </CardContent>
         </Card>
       </div>
@@ -125,21 +159,21 @@ export const RiskScoringEngine = () => {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search entities..."
+                      placeholder="Search branches, systems, customers..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9 w-64"
+                      className="pl-9 w-72"
                     />
                   </div>
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Category" />
+                  <Select value={entityTypeFilter} onValueChange={setEntityTypeFilter}>
+                    <SelectTrigger className="w-44">
+                      <SelectValue placeholder="Entity Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
+                      <SelectItem value="all">All Entity Types</SelectItem>
+                      <SelectItem value="Branch">Branches</SelectItem>
+                      <SelectItem value="IT System">IT Systems</SelectItem>
+                      <SelectItem value="High Value Customer">High Value Customers</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select value={riskFilter} onValueChange={setRiskFilter}>
@@ -166,33 +200,36 @@ export const RiskScoringEngine = () => {
                   <TableRow>
                     <TableHead>Entity ID</TableHead>
                     <TableHead>Entity Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-center">Financial</TableHead>
-                    <TableHead className="text-center">Regulatory</TableHead>
-                    <TableHead className="text-center">Operational</TableHead>
-                    <TableHead className="text-center">Historical</TableHead>
-                    <TableHead className="text-center">External</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Region</TableHead>
                     <TableHead className="text-center">Overall Score</TableHead>
                     <TableHead className="text-center">Risk Level</TableHead>
                     <TableHead className="text-center">Trend</TableHead>
+                    <TableHead>Last Assessment</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedEntities.map((entity) => (
                     <TableRow key={entity.id} className="hover:bg-muted/50">
                       <TableCell className="font-mono text-sm">{entity.id}</TableCell>
-                      <TableCell className="font-medium">{entity.name}</TableCell>
-                      <TableCell>{entity.category}</TableCell>
-                      <TableCell className="text-center">{entity.riskFactors.financialImpact}</TableCell>
-                      <TableCell className="text-center">{entity.riskFactors.regulatoryCompliance}</TableCell>
-                      <TableCell className="text-center">{entity.riskFactors.operationalComplexity}</TableCell>
-                      <TableCell className="text-center">{entity.riskFactors.historicalPerformance}</TableCell>
-                      <TableCell className="text-center">{entity.riskFactors.externalFactors}</TableCell>
+                      <TableCell className="font-medium max-w-[200px] truncate">{entity.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {getEntityTypeIcon(entity.entityType)}
+                          <span className="text-sm">{entity.entityType}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">{entity.region}</TableCell>
                       <TableCell className="text-center font-bold">{entity.overallRiskScore}</TableCell>
                       <TableCell className="text-center">
                         <Badge className={getRiskBadgeClass(entity.riskLevel)}>{entity.riskLevel}</Badge>
                       </TableCell>
                       <TableCell className="text-center">{getTrendIcon(entity.trend)}</TableCell>
+                      <TableCell className="text-sm">{entity.lastAssessment}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">{entity.status}</Badge>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
