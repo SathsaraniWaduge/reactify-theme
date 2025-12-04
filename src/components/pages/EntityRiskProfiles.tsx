@@ -9,31 +9,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { auditEntities, getEntityRiskProfile } from "@/data/riskManagementMockData";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
-import { User, Search, Download, FileText, History, Users, AlertTriangle, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Building2, Server, Users, Search, Download, History, AlertTriangle, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export const EntityRiskProfiles = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEntity, setSelectedEntity] = useState(auditEntities[0]);
-  const [categoryFilter, setCategoryFilter] = useState("all");
-
-  const categories = [...new Set(auditEntities.map(e => e.category))];
+  const [entityTypeFilter, setEntityTypeFilter] = useState("all");
 
   const filteredEntities = auditEntities.filter(entity => {
     const matchesSearch = entity.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           entity.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || entity.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+    const matchesType = entityTypeFilter === "all" || entity.entityType === entityTypeFilter;
+    return matchesSearch && matchesType;
   }).slice(0, 50);
 
   const profile = getEntityRiskProfile(selectedEntity.id);
 
-  const radarData = [
-    { factor: 'Financial', value: profile.riskFactors.financialImpact, fullMark: 100 },
-    { factor: 'Regulatory', value: profile.riskFactors.regulatoryCompliance, fullMark: 100 },
-    { factor: 'Operational', value: profile.riskFactors.operationalComplexity, fullMark: 100 },
-    { factor: 'Historical', value: profile.riskFactors.historicalPerformance, fullMark: 100 },
-    { factor: 'External', value: profile.riskFactors.externalFactors, fullMark: 100 },
-  ];
+  const radarData = Object.entries(profile.riskFactors).map(([key, value]) => ({
+    factor: key.replace(/([A-Z])/g, ' $1').trim().substring(0, 12),
+    value: value as number,
+    fullMark: 100
+  }));
 
   const getRiskBadgeClass = (level: string) => {
     switch (level) {
@@ -42,6 +38,15 @@ export const EntityRiskProfiles = () => {
       case 'Medium': return 'bg-yellow-500 text-black';
       case 'Low': return 'bg-green-500 text-white';
       default: return 'bg-gray-500 text-white';
+    }
+  };
+
+  const getEntityTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Branch': return <Building2 className="h-4 w-4 text-blue-500" />;
+      case 'IT System': return <Server className="h-4 w-4 text-purple-500" />;
+      case 'High Value Customer': return <Users className="h-4 w-4 text-green-500" />;
+      default: return null;
     }
   };
 
@@ -60,9 +65,9 @@ export const EntityRiskProfiles = () => {
           <div className="text-sm text-muted-foreground mb-2">
             Dashboard / Risk Management / Entity Risk Profiles
           </div>
-          <h1 className="text-3xl font-bold">Entity Risk Profiles</h1>
+          <h1 className="text-3xl font-bold">BOC Entity Risk Profiles</h1>
           <p className="text-muted-foreground mt-1">
-            Detailed risk profiles for all audit entities with historical data and key contacts
+            Detailed risk profiles for Branches, IT Systems, and High Value Customers
           </p>
         </div>
         <Button className="bg-gold text-black hover:bg-gold/90">
@@ -76,13 +81,13 @@ export const EntityRiskProfiles = () => {
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
+              <Building2 className="h-5 w-5" />
               Select Entity
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
+            <div className="flex flex-col gap-2">
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search..."
@@ -91,15 +96,15 @@ export const EntityRiskProfiles = () => {
                   className="pl-9"
                 />
               </div>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Category" />
+              <Select value={entityTypeFilter} onValueChange={setEntityTypeFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Entity Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  {categories.map(cat => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                  ))}
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="Branch">Branches</SelectItem>
+                  <SelectItem value="IT System">IT Systems</SelectItem>
+                  <SelectItem value="High Value Customer">HV Customers</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -115,11 +120,14 @@ export const EntityRiskProfiles = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-sm">{entity.name}</div>
-                      <div className="text-xs text-muted-foreground">{entity.id}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        {getEntityTypeIcon(entity.entityType)}
+                        <div className="font-medium text-sm truncate">{entity.name}</div>
+                      </div>
+                      <div className="text-xs text-muted-foreground">{entity.id} • {entity.entityType}</div>
                     </div>
-                    <Badge className={`${getRiskBadgeClass(entity.riskLevel)} text-xs`}>
+                    <Badge className={`${getRiskBadgeClass(entity.riskLevel)} text-xs ml-2`}>
                       {entity.overallRiskScore}
                     </Badge>
                   </div>
@@ -134,8 +142,13 @@ export const EntityRiskProfiles = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>{profile.name}</CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">{profile.id} • {profile.category} • {profile.region}</p>
+                <div className="flex items-center gap-2">
+                  {getEntityTypeIcon(profile.entityType)}
+                  <CardTitle>{profile.name}</CardTitle>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {profile.id} • {profile.entityType} • {profile.region}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <Badge className={getRiskBadgeClass(profile.riskLevel)}>
