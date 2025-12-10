@@ -42,10 +42,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     
     setIsLoading(true);
     
-    // Simulate AD authentication
     await new Promise((resolve) => setTimeout(resolve, 1500));
     
-    // Check for demo credentials
     if (username === "AU001" && password === "2003") {
       toast.success("Demo login successful", {
         description: "Logged in with demonstration account AU001",
@@ -53,7 +51,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
       console.log("[AUDIT LOG] Demo account login:", { username, timestamp: new Date().toISOString() });
       onLogin();
     } else if (username && password) {
-      // Simulate AD validation (in production, this would call the AD API)
       toast.success("Authentication successful", {
         description: "Welcome to AIIA System",
       });
@@ -68,251 +65,236 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   return (
-    <div className="fixed inset-0 flex min-h-screen bg-background">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row overflow-auto">
       {/* Left Panel - Bank of Ceylon Branding */}
       <div 
-        className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden"
+        className="hidden lg:flex lg:w-1/2 lg:min-h-screen relative flex-col justify-between p-8 xl:p-12"
         style={{
           background: `linear-gradient(135deg, rgba(15, 23, 33, 0.95) 0%, rgba(36, 31, 33, 0.9) 100%)`,
         }}
       >
-        {/* Background Image with Overlay */}
+        {/* Background Image */}
         <div 
           className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: `url(${bocBackground})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            filter: 'blur(1px)',
           }}
         />
         
-        {/* Content */}
+        {/* BOC Logo */}
         <div className="relative z-10">
-          {/* BOC Logo */}
-          <div className="flex items-center gap-4">
-            <img 
-              src={bocLogo} 
-              alt="Bank of Ceylon Logo" 
-              className="h-16 w-auto"
-            />
-          </div>
+          <img 
+            src={bocLogo} 
+            alt="Bank of Ceylon Logo" 
+            className="h-14 xl:h-16 w-auto"
+          />
         </div>
         
+        {/* Welcome Content */}
         <div className="relative z-10 space-y-6">
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold text-white leading-tight">
+          <div className="space-y-3">
+            <h1 className="text-3xl xl:text-4xl font-bold text-white leading-tight">
               Welcome to the Secure
               <span className="block text-[#ffcb03]">Internal Audit Portal</span>
             </h1>
-            <p className="text-lg text-white/80 max-w-md leading-relaxed">
+            <p className="text-base xl:text-lg text-white/80 max-w-md leading-relaxed">
               Access Bank of Ceylon's comprehensive audit management platform. 
-              Streamline your audit workflows with enterprise-grade security and efficiency.
+              Streamline your audit workflows with enterprise-grade security.
             </p>
           </div>
           
-          {/* Security Features */}
-          <div className="grid grid-cols-2 gap-4 pt-6">
-            <div className="flex items-center gap-3 text-white/70">
-              <div className="p-2 rounded-lg bg-[#ffcb03]/20">
-                <Shield className="h-5 w-5 text-[#ffcb03]" />
+          {/* Security Features Grid */}
+          <div className="grid grid-cols-2 gap-3 pt-4">
+            {[
+              { icon: Shield, label: "Active Directory Integration" },
+              { icon: Lock, label: "256-bit Encryption" },
+              { icon: CheckCircle2, label: "SOC 2 Compliant" },
+              { icon: User, label: "Role-Based Access" },
+            ].map((feature, index) => (
+              <div key={index} className="flex items-center gap-2 text-white/70">
+                <div className="p-1.5 rounded-lg bg-[#ffcb03]/20 flex-shrink-0">
+                  <feature.icon className="h-4 w-4 text-[#ffcb03]" />
+                </div>
+                <span className="text-xs xl:text-sm">{feature.label}</span>
               </div>
-              <span className="text-sm">Active Directory Integration</span>
-            </div>
-            <div className="flex items-center gap-3 text-white/70">
-              <div className="p-2 rounded-lg bg-[#ffcb03]/20">
-                <Lock className="h-5 w-5 text-[#ffcb03]" />
-              </div>
-              <span className="text-sm">256-bit Encryption</span>
-            </div>
-            <div className="flex items-center gap-3 text-white/70">
-              <div className="p-2 rounded-lg bg-[#ffcb03]/20">
-                <CheckCircle2 className="h-5 w-5 text-[#ffcb03]" />
-              </div>
-              <span className="text-sm">SOC 2 Compliant</span>
-            </div>
-            <div className="flex items-center gap-3 text-white/70">
-              <div className="p-2 rounded-lg bg-[#ffcb03]/20">
-                <User className="h-5 w-5 text-[#ffcb03]" />
-              </div>
-              <span className="text-sm">Role-Based Access</span>
-            </div>
+            ))}
           </div>
         </div>
         
+        {/* Footer */}
         <div className="relative z-10">
-          <p className="text-white/50 text-sm">
+          <p className="text-white/50 text-xs xl:text-sm">
             © {new Date().getFullYear()} Bank of Ceylon. All rights reserved.
           </p>
         </div>
       </div>
       
       {/* Right Panel - Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-24 bg-white">
-        {/* Mobile BOC Logo */}
-        <div className="lg:hidden flex justify-center mb-8">
-          <img 
-            src={bocLogo} 
-            alt="Bank of Ceylon Logo" 
-            className="h-12 w-auto"
-          />
-        </div>
-        
-        {/* AIIA System Branding */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center px-6 py-3 bg-black rounded-lg mb-4 shadow-lg">
-            <span className="text-3xl font-bold text-white tracking-widest">AIIA</span>
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Agile Integrated Internal Audit
-          </h2>
-          <p className="text-gray-500 text-sm mt-1">Management System</p>
-        </div>
-        
-        {/* Secure Connection Indicator */}
-        <div className="flex items-center justify-center gap-2 mb-8 text-green-600">
-          <Lock className="h-4 w-4" />
-          <span className="text-sm font-medium">Secure Connection (HTTPS)</span>
-        </div>
-        
-        {/* Login Form */}
-        <form onSubmit={handleLogin} className="space-y-6 max-w-md mx-auto w-full">
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-gray-700 font-medium">
-              AD Username
-            </Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter your Bank AD username"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  if (errors.username) setErrors({ ...errors, username: undefined });
-                }}
-                className={`pl-10 h-12 border-gray-300 focus:border-[#ffcb03] focus:ring-[#ffcb03] ${
-                  errors.username ? "border-red-500" : ""
-                }`}
-              />
-            </div>
-            {errors.username && (
-              <p className="text-red-500 text-sm flex items-center gap-1">
-                <AlertCircle className="h-4 w-4" />
-                {errors.username}
-              </p>
-            )}
+      <div className="w-full lg:w-1/2 min-h-screen flex flex-col bg-white">
+        <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-12 xl:px-16 overflow-y-auto">
+          {/* Mobile BOC Logo */}
+          <div className="lg:hidden flex justify-center mb-6">
+            <img 
+              src={bocLogo} 
+              alt="Bank of Ceylon Logo" 
+              className="h-10 w-auto"
+            />
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-700 font-medium">
-              Password
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password) setErrors({ ...errors, password: undefined });
-                }}
-                className={`pl-10 pr-10 h-12 border-gray-300 focus:border-[#ffcb03] focus:ring-[#ffcb03] ${
-                  errors.password ? "border-red-500" : ""
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
+          {/* AIIA System Branding */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center px-5 py-2.5 bg-black rounded-lg mb-3 shadow-lg">
+              <span className="text-2xl sm:text-3xl font-bold text-white tracking-widest">AIIA</span>
             </div>
-            {errors.password && (
-              <p className="text-red-500 text-sm flex items-center gap-1">
-                <AlertCircle className="h-4 w-4" />
-                {errors.password}
-              </p>
-            )}
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+              Agile Integrated Internal Audit
+            </h2>
+            <p className="text-gray-500 text-sm">Management System</p>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              />
-              <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
-                Remember me
+          {/* Secure Connection */}
+          <div className="flex items-center justify-center gap-2 mb-6 text-green-600">
+            <Lock className="h-4 w-4" />
+            <span className="text-sm font-medium">Secure Connection (HTTPS)</span>
+          </div>
+          
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-5 max-w-sm mx-auto w-full">
+            <div className="space-y-1.5">
+              <Label htmlFor="username" className="text-gray-700 font-medium text-sm">
+                AD Username
               </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your Bank AD username"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (errors.username) setErrors({ ...errors, username: undefined });
+                  }}
+                  className={`pl-10 h-11 border-gray-300 focus:border-[#ffcb03] focus:ring-[#ffcb03] ${
+                    errors.username ? "border-red-500" : ""
+                  }`}
+                />
+              </div>
+              {errors.username && (
+                <p className="text-red-500 text-xs flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.username}
+                </p>
+              )}
             </div>
-            <a
-              href="https://password.boc.lk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-[#0f1721] hover:text-[#ffcb03] transition-colors"
+            
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-gray-700 font-medium text-sm">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors({ ...errors, password: undefined });
+                  }}
+                  className={`pl-10 pr-10 h-11 border-gray-300 focus:border-[#ffcb03] focus:ring-[#ffcb03] ${
+                    errors.password ? "border-red-500" : ""
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-red-500 text-xs flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.password}
+                </p>
+              )}
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="remember"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                />
+                <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
+                  Remember me
+                </Label>
+              </div>
+              <a
+                href="https://password.boc.lk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-[#0f1721] hover:text-[#ffcb03] transition-colors"
+              >
+                Forgot Password?
+              </a>
+            </div>
+            
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full h-11 bg-[#0f1721] hover:bg-[#1a2a3d] text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              Forgot Password?
-            </a>
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Authenticating...
+                </div>
+              ) : (
+                "Login to AIIA"
+              )}
+            </Button>
+          </form>
+          
+          {/* Demo Credentials */}
+          <div className="mt-5 max-w-sm mx-auto w-full">
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs font-medium text-amber-800">Demo Access</p>
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    <span className="font-mono bg-amber-100 px-1 rounded">AU001</span> / 
+                    <span className="font-mono bg-amber-100 px-1 rounded ml-1">2003</span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
           
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full h-12 bg-[#0f1721] hover:bg-[#1a2a3d] text-white font-semibold text-base transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            {isLoading ? (
-              <div className="flex items-center gap-2">
-                <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Authenticating...
-              </div>
-            ) : (
-              "Login to AIIA"
-            )}
-          </Button>
-        </form>
-        
-        {/* Demo Credentials Notice */}
-        <div className="mt-6 max-w-md mx-auto w-full">
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-amber-800">Demo Access Available</p>
-                <p className="text-xs text-amber-700 mt-1">
-                  For demonstration purposes, use: <br />
-                  <span className="font-mono bg-amber-100 px-1 rounded">Username: AU001</span> | 
-                  <span className="font-mono bg-amber-100 px-1 rounded ml-1">Password: 2003</span>
+          {/* Security Notice */}
+          <div className="mt-4 max-w-sm mx-auto w-full">
+            <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-start gap-2">
+                <Shield className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  <strong>Security:</strong> Access restricted to authorized Bank of Ceylon personnel. 
+                  All activities are logged and monitored.
                 </p>
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Privacy Disclaimer */}
-        <div className="mt-8 max-w-md mx-auto w-full">
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="flex items-start gap-3">
-              <Shield className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-gray-600 leading-relaxed">
-                <strong>Security Notice:</strong> Access to this system is restricted to authorized 
-                Bank of Ceylon personnel only. All login attempts and system activities are logged 
-                and monitored for security purposes. Unauthorized access is prohibited and may be 
-                subject to legal action.
-              </p>
-            </div>
+          
+          {/* Footer */}
+          <div className="mt-6 text-center text-xs text-gray-400">
+            <p>Bank of Ceylon IT Division | v2.1.0</p>
           </div>
-        </div>
-        
-        {/* Footer */}
-        <div className="mt-8 text-center text-xs text-gray-400">
-          <p>Powered by Bank of Ceylon IT Division</p>
-          <p className="mt-1">Version 2.1.0 | Last Updated: December 2024</p>
         </div>
       </div>
     </div>
