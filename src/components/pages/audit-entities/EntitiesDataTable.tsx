@@ -58,12 +58,12 @@ export const EntitiesDataTable = ({
 
   // Filters
   const [filters, setFilters] = useState({
-    entityType: initialFilter?.type === 'entityType' ? initialFilter.value : '',
-    riskLevel: initialFilter?.type === 'risk' ? initialFilter.value : '',
-    auditTeamType: initialFilter?.type === 'team' ? initialFilter.value : '',
-    costCentre: initialFilter?.type === 'costCentre' ? initialFilter.value : '',
-    status: initialFilter?.type === 'status' ? initialFilter.value : '',
-    size: initialFilter?.type === 'size' ? initialFilter.value : '',
+    entityType: initialFilter?.type === 'entityType' ? initialFilter.value : 'all',
+    riskLevel: initialFilter?.type === 'risk' ? initialFilter.value : 'all',
+    auditTeamType: initialFilter?.type === 'team' ? initialFilter.value : 'all',
+    costCentre: initialFilter?.type === 'costCentre' ? initialFilter.value : 'all',
+    status: initialFilter?.type === 'status' ? initialFilter.value : 'all',
+    size: initialFilter?.type === 'size' ? initialFilter.value : 'all',
     travelDaysMin: '',
     travelDaysMax: '',
   });
@@ -81,12 +81,12 @@ export const EntitiesDataTable = ({
         entity.email.toLowerCase().includes(searchLower);
 
       // Filters
-      const matchesType = !filters.entityType || entity.entityType === filters.entityType;
-      const matchesRisk = !filters.riskLevel || entity.riskLevel === filters.riskLevel;
-      const matchesTeam = !filters.auditTeamType || entity.auditTeamType === filters.auditTeamType;
-      const matchesCostCentre = !filters.costCentre || entity.costCentre === filters.costCentre;
-      const matchesStatus = !filters.status || entity.status === filters.status;
-      const matchesSize = !filters.size || entity.entitySize === filters.size;
+      const matchesType = filters.entityType === 'all' || entity.entityType === filters.entityType;
+      const matchesRisk = filters.riskLevel === 'all' || entity.riskLevel === filters.riskLevel;
+      const matchesTeam = filters.auditTeamType === 'all' || entity.auditTeamType === filters.auditTeamType;
+      const matchesCostCentre = filters.costCentre === 'all' || entity.costCentre === filters.costCentre;
+      const matchesStatus = filters.status === 'all' || entity.status === filters.status;
+      const matchesSize = filters.size === 'all' || entity.entitySize === filters.size;
       
       const minDays = filters.travelDaysMin ? parseInt(filters.travelDaysMin) : 0;
       const maxDays = filters.travelDaysMax ? parseInt(filters.travelDaysMax) : 7;
@@ -186,12 +186,12 @@ export const EntitiesDataTable = ({
 
   const clearFilters = () => {
     setFilters({
-      entityType: '',
-      riskLevel: '',
-      auditTeamType: '',
-      costCentre: '',
-      status: '',
-      size: '',
+      entityType: 'all',
+      riskLevel: 'all',
+      auditTeamType: 'all',
+      costCentre: 'all',
+      status: 'all',
+      size: 'all',
       travelDaysMin: '',
       travelDaysMax: '',
     });
@@ -217,7 +217,7 @@ export const EntitiesDataTable = ({
     }
   };
 
-  const activeFilterCount = Object.values(filters).filter(v => v !== '').length;
+  const activeFilterCount = Object.entries(filters).filter(([key, v]) => v !== '' && v !== 'all').length;
 
   return (
     <Card>
@@ -307,7 +307,7 @@ export const EntitiesDataTable = ({
                   <SelectValue placeholder="Entity Type" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="Bank">Bank</SelectItem>
                   <SelectItem value="HOD">HOD</SelectItem>
                   <SelectItem value="PO">PO</SelectItem>
@@ -322,7 +322,7 @@ export const EntitiesDataTable = ({
                   <SelectValue placeholder="Risk Level" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Risks</SelectItem>
+                  <SelectItem value="all">All Risks</SelectItem>
                   <SelectItem value="CRITICAL">CRITICAL</SelectItem>
                   <SelectItem value="HIGH">HIGH</SelectItem>
                   <SelectItem value="MEDIUM">MEDIUM</SelectItem>
@@ -335,7 +335,7 @@ export const EntitiesDataTable = ({
                   <SelectValue placeholder="Audit Team" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Teams</SelectItem>
+                  <SelectItem value="all">All Teams</SelectItem>
                   <SelectItem value="HO">HO</SelectItem>
                   <SelectItem value="UVA">UVA</SelectItem>
                   <SelectItem value="NORTH">NORTH</SelectItem>
@@ -351,7 +351,7 @@ export const EntitiesDataTable = ({
                   <SelectValue placeholder="Cost Centre" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Centres</SelectItem>
+                  <SelectItem value="all">All Centres</SelectItem>
                   {costCentres.map(cc => (
                     <SelectItem key={cc} value={cc}>{cc}</SelectItem>
                   ))}
@@ -363,7 +363,7 @@ export const EntitiesDataTable = ({
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Status</SelectItem>
+                  <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="Inactive">Inactive</SelectItem>
                   <SelectItem value="Under Review">Under Review</SelectItem>
@@ -376,7 +376,7 @@ export const EntitiesDataTable = ({
                   <SelectValue placeholder="Size/Grade" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Sizes</SelectItem>
+                  <SelectItem value="all">All Sizes</SelectItem>
                   <SelectItem value="BANK">BANK</SelectItem>
                   <SelectItem value="SG">SG</SelectItem>
                   <SelectItem value="A">A</SelectItem>
