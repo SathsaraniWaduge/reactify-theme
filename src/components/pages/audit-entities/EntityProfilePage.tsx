@@ -197,45 +197,45 @@ export const EntityProfilePage = ({ entity, open, onOpenChange, onEdit }: Entity
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-[95vw] max-w-5xl max-h-[90vh] overflow-hidden flex flex-col p-4 sm:p-6">
         <DialogHeader className="flex-shrink-0">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Building2 className="h-6 w-6 text-primary" />
+              <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <div>
-                <DialogTitle className="text-xl">{entity.entityName}</DialogTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline" className="font-mono">{entity.entityId}</Badge>
-                  <Badge className={getRiskBadgeClass(entity.riskLevel)}>{entity.riskLevel}</Badge>
-                  <Badge variant="secondary">{entity.entityType}</Badge>
+              <div className="min-w-0">
+                <DialogTitle className="text-lg sm:text-xl truncate">{entity.entityName}</DialogTitle>
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
+                  <Badge variant="outline" className="font-mono text-xs">{entity.entityId}</Badge>
+                  <Badge className={`${getRiskBadgeClass(entity.riskLevel)} text-xs`}>{entity.riskLevel}</Badge>
+                  <Badge variant="secondary" className="text-xs">{entity.entityType}</Badge>
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={exportToPDF}>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={exportToPDF} className="flex-1 sm:flex-none">
                 <Printer className="h-4 w-4 mr-1" />
-                PDF
+                <span className="hidden xs:inline">PDF</span>
               </Button>
-              <Button variant="outline" size="sm" onClick={exportToExcel}>
+              <Button variant="outline" size="sm" onClick={exportToExcel} className="flex-1 sm:flex-none">
                 <Download className="h-4 w-4 mr-1" />
-                Excel
+                <span className="hidden xs:inline">Excel</span>
               </Button>
-              <Button size="sm" onClick={() => { onEdit(entity); onOpenChange(false); }}>
-                Edit Entity
+              <Button size="sm" onClick={() => { onEdit(entity); onOpenChange(false); }} className="flex-1 sm:flex-none">
+                Edit
               </Button>
             </div>
           </div>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-          <TabsList className="grid grid-cols-5 w-full">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="hierarchy">Hierarchy</TabsTrigger>
-            <TabsTrigger value="audit-trail">Audit Trail</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="metrics">Metrics</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col mt-4">
+          <TabsList className="grid grid-cols-5 w-full h-auto">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Overview</TabsTrigger>
+            <TabsTrigger value="hierarchy" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Hierarchy</TabsTrigger>
+            <TabsTrigger value="audit-trail" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Audit</TabsTrigger>
+            <TabsTrigger value="documents" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Docs</TabsTrigger>
+            <TabsTrigger value="metrics" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Metrics</TabsTrigger>
           </TabsList>
 
           <ScrollArea className="flex-1 mt-4">
