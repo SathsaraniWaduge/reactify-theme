@@ -1,80 +1,36 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Download, FileSpreadsheet, FileText } from "lucide-react";
-import { auditEntitiesData, AuditEntity, getEntityStats } from "@/data/auditEntitiesMockData";
-import { EntityStatsCards } from "./audit-entities/EntityStatsCards";
-import { EntityDashboardCharts } from "./audit-entities/EntityDashboardCharts";
-import { AddEntityDialog } from "./audit-entities/AddEntityDialog";
-import { EntityDetailDialog } from "./audit-entities/EntityDetailDialog";
-import { EntitiesTable } from "./audit-entities/EntitiesTable";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { 
+  Download, FileSpreadsheet, FileText, Landmark, Building2, 
+  Layers, Network, Database
+} from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 
+import { auditEntitiesData, getEntityStats } from "@/data/auditEntitiesMockData";
+import { BusinessEntityRegistry } from "./audit-entities/BusinessEntityRegistry";
+import { EntityTypeClassification } from "./audit-entities/EntityTypeClassification";
+import { EntityControllerHierarchy } from "./audit-entities/EntityControllerHierarchy";
+
 export const AuditEntities = () => {
-  const [entities, setEntities] = useState<AuditEntity[]>(auditEntitiesData);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [editEntity, setEditEntity] = useState<AuditEntity | null>(null);
-  const [viewEntity, setViewEntity] = useState<AuditEntity | null>(null);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeModule, setActiveModule] = useState("registry");
+  const stats = getEntityStats();
 
-  const handleAddEntity = (entityData: Partial<AuditEntity>) => {
-    const newEntity: AuditEntity = {
-      ...entityData as AuditEntity,
-      documents: [],
-      scheduledAudits: [],
-      auditHistory: [],
-      keyContacts: [],
-      riskFactors: {},
-      trend: 'stable',
-      additionalInfo: {},
-    };
-    setEntities(prev => [newEntity, ...prev]);
-  };
-
-  const handleEditEntity = (entityData: Partial<AuditEntity>) => {
-    setEntities(prev => 
-      prev.map(e => e.id === entityData.id ? { ...e, ...entityData } as AuditEntity : e)
-    );
-    setEditEntity(null);
-  };
-
-  const handleDeleteEntity = (entityId: string) => {
-    setEntities(prev => prev.filter(e => e.id !== entityId));
-  };
-
-  const handleBulkDelete = (entityIds: string[]) => {
-    setEntities(prev => prev.filter(e => !entityIds.includes(e.id)));
-  };
-
-  const handleViewEntity = (entity: AuditEntity) => {
-    setViewEntity(entity);
-    setViewDialogOpen(true);
-  };
-
-  const handleEditClick = (entity: AuditEntity) => {
-    setEditEntity(entity);
-    setAddDialogOpen(true);
-  };
-
-  // Export to PDF
+  // Export Functions
   const exportToPDF = () => {
     const doc = new jsPDF();
-    const stats = getEntityStats();
     
-    // Title
     doc.setFontSize(18);
-    doc.setTextColor(0, 0, 0);
-    doc.text("BOC Audit Entities Report", 14, 22);
+    doc.text("BOC AIIA - Audit Entities Report", 14, 22);
     
     doc.setFontSize(10);
     doc.setTextColor(100);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+    doc.text(`Generated: ${new Date().toLocaleDateString()} | Total Entities: ${stats.total}`, 14, 30);
     
-    // Summary
     doc.setFontSize(12);
     doc.setTextColor(0);
     doc.text("Summary Statistics", 14, 45);
@@ -84,163 +40,186 @@ export const AuditEntities = () => {
       head: [['Metric', 'Value']],
       body: [
         ['Total Entities', stats.total.toString()],
-        ['Extreme Risk', stats.byRisk.extreme.toString()],
-        ['High Risk', stats.byRisk.high.toString()],
-        ['Medium Risk', stats.byRisk.medium.toString()],
-        ['Low Risk', stats.byRisk.low.toString()],
-        ['Average Risk Score', stats.avgRiskScore.toString()],
-        ['Upcoming Audits', stats.upcomingAudits.toString()],
+        ['Bank', stats.byType.Bank.toString()],
+        ['HOD', stats.byType.HOD.toString()],
+        ['PO', stats.byType.PO.toString()],
+        ['Branch', stats.byType.Branch.toString()],
+        ['System', stats.byType.System.toString()],
+        ['ISL', stats.byType.ISL.toString()],
+        ['Critical Risk', stats.byRisk.CRITICAL.toString()],
+        ['High Risk', stats.byRisk.HIGH.toString()],
+        ['Active Entities', stats.byStatus.Active.toString()],
       ],
       theme: 'striped',
-      headStyles: { fillColor: [212, 175, 55] },
+      headStyles: { fillColor: [0, 51, 102] },
     });
     
-    // Entities Table
     const tableY = (doc as any).lastAutoTable.finalY + 15;
-    doc.text("Audit Entities", 14, tableY);
+    doc.text("Entity Registry", 14, tableY);
     
     autoTable(doc, {
       startY: tableY + 5,
-      head: [['Code', 'Name', 'Type', 'Risk Level', 'Score', 'Compliance', 'Last Audit']],
-      body: entities.slice(0, 30).map(e => [
-        e.code,
-        e.name.substring(0, 25),
+      head: [['ID', 'Name', 'Type', 'Size', 'Cost Centre', 'Team', 'Risk', 'Status']],
+      body: auditEntitiesData.slice(0, 40).map(e => [
+        e.entityId,
+        e.entityName.substring(0, 25),
         e.entityType,
+        e.entitySize,
+        e.costCentre,
+        e.auditTeamType,
         e.riskLevel,
-        e.riskScore.toString(),
-        e.complianceStatus,
-        e.lastAuditDate,
+        e.status,
       ]),
       theme: 'striped',
-      headStyles: { fillColor: [212, 175, 55] },
-      styles: { fontSize: 8 },
+      headStyles: { fillColor: [0, 51, 102] },
+      styles: { fontSize: 7 },
     });
     
-    doc.save('audit-entities-report.pdf');
-    toast.success("PDF exported successfully");
+    doc.save('boc-aiia-audit-entities.pdf');
+    toast.success("PDF report exported successfully");
   };
 
-  // Export to Excel
   const exportToExcel = () => {
-    const stats = getEntityStats();
+    const wb = XLSX.utils.book_new();
     
     // Summary sheet
     const summaryData = [
-      ['BOC Audit Entities Report'],
+      ['BOC AIIA - Audit Entities Report'],
       [`Generated: ${new Date().toLocaleDateString()}`],
       [],
       ['Summary Statistics'],
       ['Total Entities', stats.total],
-      ['Extreme Risk', stats.byRisk.extreme],
-      ['High Risk', stats.byRisk.high],
-      ['Medium Risk', stats.byRisk.medium],
-      ['Low Risk', stats.byRisk.low],
-      ['Average Risk Score', stats.avgRiskScore],
-      ['Upcoming Audits', stats.upcomingAudits],
+      ['By Type'],
+      ['Bank', stats.byType.Bank],
+      ['HOD', stats.byType.HOD],
+      ['PO', stats.byType.PO],
+      ['Branch', stats.byType.Branch],
+      ['System', stats.byType.System],
+      ['ISL', stats.byType.ISL],
+      [],
+      ['By Risk Level'],
+      ['CRITICAL', stats.byRisk.CRITICAL],
+      ['HIGH', stats.byRisk.HIGH],
+      ['MEDIUM', stats.byRisk.MEDIUM],
+      ['LOW', stats.byRisk.LOW],
+      [],
+      ['By Audit Team'],
+      ...Object.entries(stats.byTeam).map(([team, count]) => [team, count]),
     ];
-    
-    // Entities data
-    const entitiesData = entities.map(e => ({
-      'Code': e.code,
-      'Name': e.name,
-      'Type': e.entityType,
-      'Category': e.category,
-      'Region': e.region,
-      'Risk Level': e.riskLevel,
-      'Risk Score': e.riskScore,
-      'Compliance Status': e.complianceStatus,
-      'Status': e.status,
-      'Last Audit Date': e.lastAuditDate,
-      'Next Audit Date': e.nextAuditDate,
-      'Audit Frequency': e.auditFrequency,
-      'Owner': e.ownerName,
-      'Owner Email': e.ownerEmail,
-      'Department': e.ownerDepartment,
-      'Assigned Auditor': e.assignedAuditor,
-    }));
-    
-    const wb = XLSX.utils.book_new();
     
     const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
     XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
     
+    // Entities sheet
+    const entitiesData = auditEntitiesData.map(e => ({
+      'Entity ID': e.entityId,
+      'Entity Name': e.entityName,
+      'Entity Type': e.entityType,
+      'Entity Size': e.entitySize,
+      'Cost Centre': e.costCentre,
+      'Email': e.email,
+      'Audit Team': e.auditTeamType,
+      'Travel Days': e.officialTravelDays,
+      'Risk Level': e.riskLevel,
+      'Status': e.status,
+      'Last Audit': e.lastAuditDate || '',
+      'Next Audit': e.nextAuditDate || '',
+      'Total Audits': e.totalAudits,
+      'Open Findings': e.openFindings,
+      'Closed Findings': e.closedFindings,
+      'Version': e.version,
+      'Created': e.createdAt,
+      'Updated': e.updatedAt,
+    }));
+    
     const entitiesWs = XLSX.utils.json_to_sheet(entitiesData);
     XLSX.utils.book_append_sheet(wb, entitiesWs, 'Entities');
     
-    XLSX.writeFile(wb, 'audit-entities-report.xlsx');
-    toast.success("Excel exported successfully");
+    XLSX.writeFile(wb, 'boc-aiia-audit-entities.xlsx');
+    toast.success("Excel report exported successfully");
   };
 
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Audit Entities</h1>
-          <p className="text-sm text-muted-foreground">
-            Dashboard / Master Data / Audit Entities
-          </p>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Landmark className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Audit Entities</h1>
+            <p className="text-sm text-muted-foreground">
+              Master Data / Audit Universe Management
+            </p>
+          </div>
+          <Badge variant="secondary" className="ml-2">
+            {stats.total} entities
+          </Badge>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={exportToPDF}>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={exportToPDF}>
             <FileText className="h-4 w-4 mr-2" />
             Export PDF
           </Button>
-          <Button variant="outline" onClick={exportToExcel}>
+          <Button variant="outline" size="sm" onClick={exportToExcel}>
             <FileSpreadsheet className="h-4 w-4 mr-2" />
             Export Excel
-          </Button>
-          <Button onClick={() => { setEditEntity(null); setAddDialogOpen(true); }} className="bg-primary text-primary-foreground">
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Entity
           </Button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="entities">Entities List</TabsTrigger>
+      {/* Main Module Tabs */}
+      <Tabs value={activeModule} onValueChange={setActiveModule} className="space-y-6">
+        <TabsList className="grid w-full max-w-2xl grid-cols-3 h-auto p-1">
+          <TabsTrigger 
+            value="registry" 
+            className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Database className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-medium">Business Entity Registry</div>
+              <div className="text-xs opacity-70 hidden sm:block">Manage audit entities</div>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="classification" 
+            className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Layers className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-medium">Entity Type Classification</div>
+              <div className="text-xs opacity-70 hidden sm:block">Configure entity types</div>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="hierarchy" 
+            className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Network className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-medium">Entity-Controller Hierarchy</div>
+              <div className="text-xs opacity-70 hidden sm:block">View relationships</div>
+            </div>
+          </TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="dashboard" className="space-y-6 mt-6">
-          {/* Stats Cards */}
-          <EntityStatsCards />
-          
-          {/* Dashboard Charts */}
-          <EntityDashboardCharts />
+
+        {/* Business Entity Registry */}
+        <TabsContent value="registry" className="mt-0">
+          <BusinessEntityRegistry />
         </TabsContent>
-        
-        <TabsContent value="entities" className="mt-6">
-          {/* Entities Table */}
-          <EntitiesTable
-            entities={entities}
-            onView={handleViewEntity}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteEntity}
-            onBulkDelete={handleBulkDelete}
-          />
+
+        {/* Entity Type Classification */}
+        <TabsContent value="classification" className="mt-0">
+          <EntityTypeClassification />
+        </TabsContent>
+
+        {/* Entity-Controller Hierarchy */}
+        <TabsContent value="hierarchy" className="mt-0">
+          <EntityControllerHierarchy />
         </TabsContent>
       </Tabs>
-
-      {/* Add/Edit Dialog */}
-      <AddEntityDialog
-        open={addDialogOpen}
-        onOpenChange={(open) => {
-          setAddDialogOpen(open);
-          if (!open) setEditEntity(null);
-        }}
-        onSave={editEntity ? handleEditEntity : handleAddEntity}
-        editEntity={editEntity}
-      />
-
-      {/* View Detail Dialog */}
-      <EntityDetailDialog
-        entity={viewEntity}
-        open={viewDialogOpen}
-        onOpenChange={setViewDialogOpen}
-      />
     </div>
   );
 };
