@@ -46,7 +46,7 @@ const riskColors: Record<string, string> = {
 
 export const EntityControllerHierarchy = () => {
   const [search, setSearch] = useState('');
-  const [filterType, setFilterType] = useState<string>('');
+  const [filterType, setFilterType] = useState<string>('all');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['EN000001']));
   const [selectedEntity, setSelectedEntity] = useState<AuditEntity | null>(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
@@ -61,7 +61,7 @@ export const EntityControllerHierarchy = () => {
     const buildTree = (parentId: string | null, level: number): HierarchyNode[] => {
       return auditEntitiesData
         .filter(e => e.parentEntityId === parentId)
-        .filter(e => !filterType || e.entityType === filterType)
+        .filter(e => filterType === 'all' || e.entityType === filterType)
         .filter(e => !search || 
           e.entityName.toLowerCase().includes(search.toLowerCase()) ||
           e.entityId.toLowerCase().includes(search.toLowerCase())
@@ -315,7 +315,7 @@ export const EntityControllerHierarchy = () => {
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover">
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="Bank">Bank</SelectItem>
                   <SelectItem value="HOD">HOD</SelectItem>
                   <SelectItem value="PO">PO</SelectItem>
@@ -477,12 +477,12 @@ export const EntityControllerHierarchy = () => {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Parent Entity</label>
-                <Select defaultValue={selectedEntity.parentEntityId || ''}>
+                <Select defaultValue={selectedEntity.parentEntityId || '__none__'}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select parent entity" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover max-h-60">
-                    <SelectItem value="">No Parent</SelectItem>
+                    <SelectItem value="__none__">No Parent</SelectItem>
                     {auditEntitiesData
                       .filter(e => e.entityId !== selectedEntity.entityId)
                       .map(e => (
@@ -497,12 +497,12 @@ export const EntityControllerHierarchy = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Controller Entity</label>
-                <Select defaultValue={selectedEntity.controllerEntityId || ''}>
+                <Select defaultValue={selectedEntity.controllerEntityId || '__none__'}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select controller" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover max-h-60">
-                    <SelectItem value="">No Controller</SelectItem>
+                    <SelectItem value="__none__">No Controller</SelectItem>
                     {auditEntitiesData
                       .filter(e => e.entityType === 'HOD' || e.entityType === 'PO')
                       .map(e => (
