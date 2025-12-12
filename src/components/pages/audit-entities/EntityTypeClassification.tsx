@@ -414,17 +414,17 @@ export const EntityTypeClassification = () => {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">
               {selectedType ? 'Edit Entity Type' : 'Add New Entity Type'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               Configure the entity type settings and classification rules
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-4 py-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
               <Label>Code *</Label>
               <Input
@@ -444,7 +444,7 @@ export const EntityTypeClassification = () => {
               />
             </div>
 
-            <div className="col-span-2 space-y-2">
+            <div className="sm:col-span-2 space-y-2">
               <Label>Description</Label>
               <Textarea
                 value={formData.description || ''}
@@ -554,7 +554,7 @@ export const EntityTypeClassification = () => {
               />
             </div>
 
-            <div className="col-span-2 flex items-center justify-between p-3 border rounded-lg">
+            <div className="sm:col-span-2 flex items-center justify-between p-3 border rounded-lg">
               <div className="space-y-0.5">
                 <Label>Active</Label>
                 <p className="text-xs text-muted-foreground">Entity type is available for new entities</p>
@@ -566,11 +566,11 @@ export const EntityTypeClassification = () => {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button onClick={handleSave}>
+            <Button onClick={handleSave} className="w-full sm:w-auto">
               {selectedType ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>

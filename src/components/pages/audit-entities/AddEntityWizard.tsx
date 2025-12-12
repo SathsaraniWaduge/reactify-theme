@@ -191,12 +191,12 @@ export const AddEntityWizard = ({ open, onOpenChange, onSave, editEntity }: AddE
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl">
+          <DialogTitle className="text-lg sm:text-xl">
             {editEntity ? 'Edit Audit Entity' : 'Add New Audit Entity'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             {editEntity 
               ? `Editing entity ${editEntity.entityId} - Version ${editEntity.version}`
               : 'Complete the wizard to create a new audit entity in the universe'
@@ -207,7 +207,7 @@ export const AddEntityWizard = ({ open, onOpenChange, onSave, editEntity }: AddE
         {/* Progress Bar */}
         <div className="space-y-3">
           <Progress value={progressPercent} className="h-2" />
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-1">
             {steps.map((step) => {
               const StepIcon = step.icon;
               const isActive = currentStep === step.id;
@@ -216,17 +216,18 @@ export const AddEntityWizard = ({ open, onOpenChange, onSave, editEntity }: AddE
               return (
                 <div 
                   key={step.id}
-                  className={`flex flex-col items-center text-center w-1/4 ${
+                  className={`flex flex-col items-center text-center flex-1 ${
                     isActive ? 'text-primary' : isComplete ? 'text-green-500' : 'text-muted-foreground'
                   }`}
                 >
                   <div className={`
-                    w-10 h-10 rounded-full flex items-center justify-center border-2 mb-1
+                    w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 mb-1
                     ${isActive ? 'border-primary bg-primary/10' : isComplete ? 'border-green-500 bg-green-500/10' : 'border-muted'}
                   `}>
-                    {isComplete ? <Check className="h-5 w-5" /> : <StepIcon className="h-5 w-5" />}
+                    {isComplete ? <Check className="h-4 w-4 sm:h-5 sm:w-5" /> : <StepIcon className="h-4 w-4 sm:h-5 sm:w-5" />}
                   </div>
-                  <span className="text-xs font-medium hidden sm:block">{step.title}</span>
+                  <span className="text-[10px] sm:text-xs font-medium hidden xs:block sm:block">{step.title}</span>
+                  <span className="text-[10px] font-medium block xs:hidden sm:hidden">{step.id}</span>
                 </div>
               );
             })}
@@ -561,27 +562,28 @@ export const AddEntityWizard = ({ open, onOpenChange, onSave, editEntity }: AddE
           )}
         </div>
 
-        <DialogFooter className="flex justify-between sm:justify-between">
+        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0 sm:justify-between mt-4">
           <Button
             variant="outline"
             onClick={handleBack}
             disabled={currentStep === 1}
+            className="w-full sm:w-auto"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back
           </Button>
           
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
               Cancel
             </Button>
             {currentStep < steps.length ? (
-              <Button onClick={handleNext} disabled={!canProceed()}>
+              <Button onClick={handleNext} disabled={!canProceed()} className="w-full sm:w-auto">
                 Next
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
+              <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
                 <Check className="h-4 w-4 mr-1" />
                 {editEntity ? 'Update Entity' : 'Create Entity'}
               </Button>
