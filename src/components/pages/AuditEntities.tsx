@@ -3,79 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Download, FileSpreadsheet, FileText, LayoutDashboard, List, Landmark } from "lucide-react";
+import { 
+  Download, FileSpreadsheet, FileText, Landmark, Building2, 
+  Layers, Network, Database
+} from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 
-import { auditEntitiesData, AuditEntity, getEntityStats } from "@/data/auditEntitiesMockData";
-import { EntityDashboardWidgets } from "./audit-entities/EntityDashboardWidgets";
-import { EntitiesDataTable } from "./audit-entities/EntitiesDataTable";
-import { AddEntityWizard } from "./audit-entities/AddEntityWizard";
-import { EntityProfilePage } from "./audit-entities/EntityProfilePage";
-import { RecentActivityPanel } from "./audit-entities/RecentActivityPanel";
+import { auditEntitiesData, getEntityStats } from "@/data/auditEntitiesMockData";
+import { BusinessEntityRegistry } from "./audit-entities/BusinessEntityRegistry";
+import { EntityTypeClassification } from "./audit-entities/EntityTypeClassification";
+import { EntityControllerHierarchy } from "./audit-entities/EntityControllerHierarchy";
 
 export const AuditEntities = () => {
-  const [entities, setEntities] = useState<AuditEntity[]>(auditEntitiesData);
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [wizardOpen, setWizardOpen] = useState(false);
-  const [editEntity, setEditEntity] = useState<AuditEntity | null>(null);
-  const [viewEntity, setViewEntity] = useState<AuditEntity | null>(null);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [drillDownFilter, setDrillDownFilter] = useState<{ type: string; value: string } | null>(null);
-
+  const [activeModule, setActiveModule] = useState("registry");
   const stats = getEntityStats();
-
-  // Handle drill-down from dashboard widgets
-  const handleDrillDown = (filter: { type: string; value: string }) => {
-    setDrillDownFilter(filter);
-    setActiveTab("entities");
-  };
-
-  // CRUD Operations
-  const handleAddEntity = (newEntity: AuditEntity) => {
-    setEntities(prev => [newEntity, ...prev]);
-  };
-
-  const handleEditEntity = (updatedEntity: AuditEntity) => {
-    setEntities(prev => 
-      prev.map(e => e.entityId === updatedEntity.entityId ? updatedEntity : e)
-    );
-    setEditEntity(null);
-  };
-
-  const handleDeleteEntity = (entityId: string) => {
-    setEntities(prev => 
-      prev.map(e => e.entityId === entityId ? { ...e, status: 'Deactivated' as const } : e)
-    );
-  };
-
-  const handleBulkAction = (entityIds: string[], action: string) => {
-    switch (action) {
-      case 'deactivate':
-        setEntities(prev => 
-          prev.map(e => entityIds.includes(e.entityId) ? { ...e, status: 'Deactivated' as const } : e)
-        );
-        toast.success(`${entityIds.length} entities deactivated`);
-        break;
-      case 'assign-team':
-        toast.info('Team assignment dialog would open here');
-        break;
-      case 'update-status':
-        toast.info('Status update dialog would open here');
-        break;
-    }
-  };
-
-  const handleViewEntity = (entity: AuditEntity) => {
-    setViewEntity(entity);
-    setProfileOpen(true);
-  };
-
-  const handleEditClick = (entity: AuditEntity) => {
-    setEditEntity(entity);
-    setWizardOpen(true);
-  };
 
   // Export Functions
   const exportToPDF = () => {
@@ -117,7 +60,7 @@ export const AuditEntities = () => {
     autoTable(doc, {
       startY: tableY + 5,
       head: [['ID', 'Name', 'Type', 'Size', 'Cost Centre', 'Team', 'Risk', 'Status']],
-      body: entities.slice(0, 40).map(e => [
+      body: auditEntitiesData.slice(0, 40).map(e => [
         e.entityId,
         e.entityName.substring(0, 25),
         e.entityType,
@@ -168,7 +111,7 @@ export const AuditEntities = () => {
     XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
     
     // Entities sheet
-    const entitiesData = entities.map(e => ({
+    const entitiesData = auditEntitiesData.map(e => ({
       'Entity ID': e.entityId,
       'Entity Name': e.entityName,
       'Entity Type': e.entityType,
@@ -224,75 +167,59 @@ export const AuditEntities = () => {
             <FileSpreadsheet className="h-4 w-4 mr-2" />
             Export Excel
           </Button>
-          <Button 
-            onClick={() => { setEditEntity(null); setWizardOpen(true); }}
-            className="bg-primary text-primary-foreground"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Entity
-          </Button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); if (v === 'dashboard') setDrillDownFilter(null); }}>
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="dashboard" className="flex items-center gap-2">
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
+      {/* Main Module Tabs */}
+      <Tabs value={activeModule} onValueChange={setActiveModule} className="space-y-6">
+        <TabsList className="grid w-full max-w-2xl grid-cols-3 h-auto p-1">
+          <TabsTrigger 
+            value="registry" 
+            className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Database className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-medium">Business Entity Registry</div>
+              <div className="text-xs opacity-70 hidden sm:block">Manage audit entities</div>
+            </div>
           </TabsTrigger>
-          <TabsTrigger value="entities" className="flex items-center gap-2">
-            <List className="h-4 w-4" />
-            Entity Registry
+          <TabsTrigger 
+            value="classification" 
+            className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Layers className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-medium">Entity Type Classification</div>
+              <div className="text-xs opacity-70 hidden sm:block">Configure entity types</div>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="hierarchy" 
+            className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Network className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-medium">Entity-Controller Hierarchy</div>
+              <div className="text-xs opacity-70 hidden sm:block">View relationships</div>
+            </div>
           </TabsTrigger>
         </TabsList>
 
-        {/* Dashboard Tab */}
-        <TabsContent value="dashboard" className="mt-6 space-y-6">
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-            <div className="xl:col-span-3">
-              <EntityDashboardWidgets 
-                entities={entities}
-                onDrillDown={handleDrillDown}
-              />
-            </div>
-            <div className="xl:col-span-1">
-              <RecentActivityPanel />
-            </div>
-          </div>
+        {/* Business Entity Registry */}
+        <TabsContent value="registry" className="mt-0">
+          <BusinessEntityRegistry />
         </TabsContent>
 
-        {/* Entity Registry Tab */}
-        <TabsContent value="entities" className="mt-6">
-          <EntitiesDataTable
-            entities={entities}
-            onView={handleViewEntity}
-            onEdit={handleEditClick}
-            onDelete={handleDeleteEntity}
-            onBulkAction={handleBulkAction}
-            initialFilter={drillDownFilter}
-          />
+        {/* Entity Type Classification */}
+        <TabsContent value="classification" className="mt-0">
+          <EntityTypeClassification />
+        </TabsContent>
+
+        {/* Entity-Controller Hierarchy */}
+        <TabsContent value="hierarchy" className="mt-0">
+          <EntityControllerHierarchy />
         </TabsContent>
       </Tabs>
-
-      {/* Add/Edit Entity Wizard */}
-      <AddEntityWizard
-        open={wizardOpen}
-        onOpenChange={(open) => {
-          setWizardOpen(open);
-          if (!open) setEditEntity(null);
-        }}
-        onSave={editEntity ? handleEditEntity : handleAddEntity}
-        editEntity={editEntity}
-      />
-
-      {/* Entity Profile Page */}
-      <EntityProfilePage
-        entity={viewEntity}
-        open={profileOpen}
-        onOpenChange={setProfileOpen}
-        onEdit={handleEditClick}
-      />
     </div>
   );
 };
