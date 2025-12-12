@@ -36,7 +36,7 @@ const getActivityBadgeVariant = (type: string) => {
 
 export const RecentActivityPanel = () => {
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col min-h-[500px]">
       <CardHeader className="pb-3 flex-shrink-0">
         <CardTitle className="text-sm font-semibold flex items-center gap-2">
           <Users className="h-4 w-4" />
@@ -44,7 +44,7 @@ export const RecentActivityPanel = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0 flex-1 overflow-hidden">
-        <ScrollArea className="h-full max-h-[350px] lg:max-h-[450px]">
+        <ScrollArea className="h-full">
           <div className="space-y-2 px-4 pb-4">
             {recentEntityActivity.map((activity) => (
               <div 
