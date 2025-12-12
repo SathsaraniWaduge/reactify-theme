@@ -1,313 +1,516 @@
-// Audit Entities Mock Data for BOC Bank Master Data Module
-import { auditEntities as riskEntities, getEntityRiskProfile } from './riskManagementMockData';
+// Enterprise Audit Entities Mock Data for BOC Bank AIIA System
+// Master Data Module - Audit Universe Management
 
-export type ComplianceStatus = 'Compliant' | 'Non-Compliant' | 'Pending Review' | 'Remediation Required';
-export type EntityStatus = 'Active' | 'Inactive' | 'Under Review' | 'Suspended';
+export type EntityType = 'Bank' | 'HOD' | 'PO' | 'Branch' | 'System' | 'ISL';
+export type EntitySize = 'BANK' | 'SG' | 'A' | 'B' | 'C';
+export type AuditTeamType = 'HO' | 'UVA' | 'NORTH' | 'SOUTH' | 'EAST' | 'WEST' | 'CENTRAL';
+export type RiskLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+export type EntityStatus = 'Active' | 'Inactive' | 'Under Review' | 'Deactivated';
 
-export interface AuditEntityDocument {
-  id: string;
-  name: string;
-  type: 'Policy' | 'Report' | 'Certificate' | 'Agreement' | 'Assessment';
-  uploadDate: string;
-  uploadedBy: string;
-  size: string;
-  category: string;
-}
-
-export interface ScheduledAudit {
-  id: string;
-  auditType: string;
-  scheduledDate: string;
-  leadAuditor: string;
-  status: 'Scheduled' | 'Confirmed' | 'Pending Approval';
-  priority: 'High' | 'Medium' | 'Low';
+export interface AuditEntity {
+  entityId: string;
+  entityName: string;
+  entityType: EntityType;
+  entitySize: EntitySize;
+  costCentre: string;
+  email: string;
+  auditTeamType: AuditTeamType;
+  officialTravelDays: number;
+  // Extended fields for comprehensive management
+  riskLevel: RiskLevel;
+  status: EntityStatus;
+  lastAuditDate: string | null;
+  nextAuditDate: string | null;
+  parentEntityId: string | null;
+  controllerEntityId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+  createdBy: string;
+  updatedBy: string;
+  // Audit metrics
+  totalAudits: number;
+  openFindings: number;
+  closedFindings: number;
+  pendingActions: number;
 }
 
 export interface AuditHistoryItem {
   id: string;
+  entityId: string;
   auditType: string;
+  auditYear: number;
   startDate: string;
   endDate: string;
   leadAuditor: string;
-  teamSize: number;
+  teamMembers: string[];
   findings: number;
   criticalFindings: number;
+  highFindings: number;
+  mediumFindings: number;
+  lowFindings: number;
   recommendations: number;
   implementedRecommendations: number;
   rating: 'Satisfactory' | 'Needs Improvement' | 'Unsatisfactory' | 'Critical';
-  reportLink: string;
+  status: 'Completed' | 'In Progress' | 'Draft';
+  reportUrl: string;
 }
 
-export interface AuditEntity {
+export interface EntityDocument {
   id: string;
-  code: string;
+  entityId: string;
   name: string;
-  entityType: 'Branch' | 'IT System' | 'High Value Customer';
+  type: 'Policy' | 'Procedure' | 'Report' | 'Certificate' | 'Assessment' | 'Other';
   category: string;
-  region: string;
-  riskLevel: 'Extreme' | 'High' | 'Medium' | 'Low';
-  riskScore: number;
-  complianceStatus: ComplianceStatus;
-  status: EntityStatus;
-  lastAuditDate: string;
-  nextAuditDate: string;
-  assignedAuditor: string;
-  ownerName: string;
-  ownerEmail: string;
-  ownerDepartment: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
+  uploadDate: string;
+  uploadedBy: string;
+  fileSize: string;
   version: number;
-  auditFrequency: 'Monthly' | 'Quarterly' | 'Semi-Annual' | 'Annual';
-  riskFactors: Record<string, number>;
-  trend: 'increasing' | 'stable' | 'decreasing';
-  documents: AuditEntityDocument[];
-  scheduledAudits: ScheduledAudit[];
-  auditHistory: AuditHistoryItem[];
-  keyContacts: { name: string; role: string; email: string; phone: string }[];
-  // Additional fields based on entity type
-  additionalInfo: Record<string, string>;
+  status: 'Current' | 'Archived' | 'Draft';
 }
 
-// Owner pool for entities
-const owners = [
-  { name: 'Mahendra Rajapaksa', email: 'mahendra.r@boc.lk', department: 'Branch Operations' },
-  { name: 'Kumudu Perera', email: 'kumudu.p@boc.lk', department: 'IT Division' },
-  { name: 'Sanjaya Fernando', email: 'sanjaya.f@boc.lk', department: 'Corporate Banking' },
-  { name: 'Dilini Jayawardena', email: 'dilini.j@boc.lk', department: 'Risk Management' },
-  { name: 'Ruwan Silva', email: 'ruwan.s@boc.lk', department: 'Compliance' },
-  { name: 'Amali Wickramasinghe', email: 'amali.w@boc.lk', department: 'Treasury' },
-  { name: 'Pradeep Kumarasiri', email: 'pradeep.k@boc.lk', department: 'Retail Banking' },
-  { name: 'Nishantha Bandara', email: 'nishantha.b@boc.lk', department: 'Internal Audit' },
-];
-
-const documentTypes: AuditEntityDocument['type'][] = ['Policy', 'Report', 'Certificate', 'Agreement', 'Assessment'];
-const auditTypes = ['Compliance', 'Financial', 'Operational', 'IT Security', 'Credit Risk', 'AML/KYC'];
-const ratings: AuditHistoryItem['rating'][] = ['Satisfactory', 'Needs Improvement', 'Unsatisfactory', 'Critical'];
-
-function getRandomPastDate(maxDays: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() - Math.floor(Math.random() * maxDays));
-  return date.toISOString().split('T')[0];
+export interface EntityHierarchy {
+  entityId: string;
+  parentId: string | null;
+  controllerId: string | null;
+  level: number;
+  path: string[];
 }
 
-function getRandomFutureDate(maxDays: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() + Math.floor(Math.random() * maxDays));
-  return date.toISOString().split('T')[0];
-}
+// Cost Centre codes used at BOC
+export const costCentres = ['660', '55', '100', '200', '300', '400', '500', '601', '602', '603', '650', '700', '800', '900'];
 
-// Generate comprehensive documents for each entity
-function generateDocuments(entityId: string): AuditEntityDocument[] {
-  const count = Math.floor(Math.random() * 5) + 2;
-  const documents: AuditEntityDocument[] = [];
-  
-  for (let i = 0; i < count; i++) {
-    documents.push({
-      id: `DOC-${entityId}-${String(i + 1).padStart(3, '0')}`,
-      name: `${documentTypes[i % documentTypes.length]} Document ${i + 1}`,
-      type: documentTypes[i % documentTypes.length],
-      uploadDate: getRandomPastDate(365),
-      uploadedBy: owners[i % owners.length].name,
-      size: `${Math.floor(Math.random() * 5000) + 100} KB`,
-      category: auditTypes[i % auditTypes.length],
+// Entity type definitions with conditional logic
+export const entityTypeConfig: Record<EntityType, { sizes: EntitySize[], defaultSize: EntitySize }> = {
+  'Bank': { sizes: ['BANK'], defaultSize: 'BANK' },
+  'HOD': { sizes: ['BANK'], defaultSize: 'BANK' },
+  'PO': { sizes: ['BANK'], defaultSize: 'BANK' },
+  'Branch': { sizes: ['SG', 'A', 'B', 'C'], defaultSize: 'B' },
+  'System': { sizes: ['BANK'], defaultSize: 'BANK' },
+  'ISL': { sizes: ['SG', 'A', 'B', 'C'], defaultSize: 'C' },
+};
+
+// Team allocation by region
+export const auditTeamRegions: Record<AuditTeamType, string> = {
+  'HO': 'Head Office',
+  'UVA': 'Uva Province',
+  'NORTH': 'Northern Province',
+  'SOUTH': 'Southern Province',
+  'EAST': 'Eastern Province',
+  'WEST': 'Western Province',
+  'CENTRAL': 'Central Province',
+};
+
+// Generate sequential Entity ID
+let entityCounter = 1;
+export const generateEntityId = (): string => {
+  const id = `EN${String(entityCounter).padStart(6, '0')}`;
+  entityCounter++;
+  return id;
+};
+
+export const resetEntityCounter = (startFrom: number = 1) => {
+  entityCounter = startFrom;
+};
+
+// Generate mock audit entities
+const generateMockEntities = (): AuditEntity[] => {
+  const entities: AuditEntity[] = [];
+  resetEntityCounter(1);
+
+  // Bank entity (root)
+  entities.push({
+    entityId: generateEntityId(),
+    entityName: 'Bank of Ceylon - Head Office',
+    entityType: 'Bank',
+    entitySize: 'BANK',
+    costCentre: '660',
+    email: 'headoffice@boc.lk',
+    auditTeamType: 'HO',
+    officialTravelDays: 0,
+    riskLevel: 'CRITICAL',
+    status: 'Active',
+    lastAuditDate: '2024-12-15',
+    nextAuditDate: '2025-06-15',
+    parentEntityId: null,
+    controllerEntityId: null,
+    createdAt: '2020-01-01',
+    updatedAt: '2025-01-10',
+    version: 12,
+    createdBy: 'System',
+    updatedBy: 'AU001',
+    totalAudits: 48,
+    openFindings: 5,
+    closedFindings: 180,
+    pendingActions: 8,
+  });
+
+  // HOD entities
+  const hodNames = [
+    'Internal Audit Division', 'IT Division', 'Finance Division', 'Risk Management Division',
+    'Compliance Division', 'Operations Division', 'Credit Division', 'Treasury Division',
+    'Human Resources Division', 'Legal Division'
+  ];
+
+  hodNames.forEach((name, index) => {
+    entities.push({
+      entityId: generateEntityId(),
+      entityName: name,
+      entityType: 'HOD',
+      entitySize: 'BANK',
+      costCentre: costCentres[index % costCentres.length],
+      email: `${name.toLowerCase().replace(/\s+/g, '.')}@boc.lk`,
+      auditTeamType: 'HO',
+      officialTravelDays: 0,
+      riskLevel: ['CRITICAL', 'HIGH', 'MEDIUM'][index % 3] as RiskLevel,
+      status: 'Active',
+      lastAuditDate: `2024-${String((index % 12) + 1).padStart(2, '0')}-15`,
+      nextAuditDate: `2025-${String(((index + 6) % 12) + 1).padStart(2, '0')}-15`,
+      parentEntityId: 'EN000001',
+      controllerEntityId: null,
+      createdAt: '2020-01-15',
+      updatedAt: '2025-01-05',
+      version: 5 + index,
+      createdBy: 'System',
+      updatedBy: 'AU001',
+      totalAudits: 20 + index * 2,
+      openFindings: index % 5,
+      closedFindings: 50 + index * 3,
+      pendingActions: index % 4,
     });
-  }
-  
-  return documents;
-}
+  });
 
-// Generate scheduled audits for entity
-function generateScheduledAudits(entityId: string, riskLevel: string): ScheduledAudit[] {
-  const count = riskLevel === 'Extreme' || riskLevel === 'High' ? 3 : Math.floor(Math.random() * 2) + 1;
-  const audits: ScheduledAudit[] = [];
-  
-  for (let i = 0; i < count; i++) {
-    audits.push({
-      id: `SCH-${entityId}-${String(i + 1).padStart(3, '0')}`,
-      auditType: auditTypes[Math.floor(Math.random() * auditTypes.length)],
-      scheduledDate: getRandomFutureDate(180),
-      leadAuditor: `Auditor ${Math.floor(Math.random() * 10) + 1}`,
-      status: ['Scheduled', 'Confirmed', 'Pending Approval'][Math.floor(Math.random() * 3)] as ScheduledAudit['status'],
-      priority: riskLevel === 'Extreme' ? 'High' : riskLevel === 'High' ? 'High' : riskLevel === 'Medium' ? 'Medium' : 'Low',
+  // Branch entities
+  const branchData = [
+    { name: 'Colombo Main Branch', region: 'WEST', size: 'SG' as EntitySize, cost: '100', risk: 'CRITICAL' as RiskLevel },
+    { name: 'Kandy City Branch', region: 'CENTRAL', size: 'SG' as EntitySize, cost: '200', risk: 'HIGH' as RiskLevel },
+    { name: 'Galle Fort Branch', region: 'SOUTH', size: 'A' as EntitySize, cost: '300', risk: 'HIGH' as RiskLevel },
+    { name: 'Jaffna Main Branch', region: 'NORTH', size: 'A' as EntitySize, cost: '400', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Batticaloa Branch', region: 'EAST', size: 'B' as EntitySize, cost: '500', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Badulla Branch', region: 'UVA', size: 'B' as EntitySize, cost: '601', risk: 'LOW' as RiskLevel },
+    { name: 'Negombo Branch', region: 'WEST', size: 'A' as EntitySize, cost: '100', risk: 'HIGH' as RiskLevel },
+    { name: 'Matara Branch', region: 'SOUTH', size: 'B' as EntitySize, cost: '300', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Trincomalee Branch', region: 'EAST', size: 'B' as EntitySize, cost: '500', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Anuradhapura Branch', region: 'NORTH', size: 'A' as EntitySize, cost: '400', risk: 'HIGH' as RiskLevel },
+    { name: 'Ratnapura Branch', region: 'CENTRAL', size: 'B' as EntitySize, cost: '200', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Kurunegala Branch', region: 'WEST', size: 'A' as EntitySize, cost: '100', risk: 'HIGH' as RiskLevel },
+    { name: 'Hambantota Branch', region: 'SOUTH', size: 'C' as EntitySize, cost: '300', risk: 'LOW' as RiskLevel },
+    { name: 'Polonnaruwa Branch', region: 'EAST', size: 'C' as EntitySize, cost: '500', risk: 'LOW' as RiskLevel },
+    { name: 'Nuwara Eliya Branch', region: 'CENTRAL', size: 'C' as EntitySize, cost: '200', risk: 'LOW' as RiskLevel },
+    { name: 'Ampara Branch', region: 'EAST', size: 'C' as EntitySize, cost: '500', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Monaragala Branch', region: 'UVA', size: 'C' as EntitySize, cost: '601', risk: 'LOW' as RiskLevel },
+    { name: 'Kegalle Branch', region: 'CENTRAL', size: 'B' as EntitySize, cost: '200', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Puttalam Branch', region: 'WEST', size: 'B' as EntitySize, cost: '100', risk: 'MEDIUM' as RiskLevel },
+    { name: 'Vavuniya Branch', region: 'NORTH', size: 'C' as EntitySize, cost: '400', risk: 'LOW' as RiskLevel },
+    { name: 'Kalutara Branch', region: 'WEST', size: 'A' as EntitySize, cost: '100', risk: 'HIGH' as RiskLevel },
+    { name: 'Gampaha Branch', region: 'WEST', size: 'A' as EntitySize, cost: '100', risk: 'HIGH' as RiskLevel },
+    { name: 'Mannar Branch', region: 'NORTH', size: 'C' as EntitySize, cost: '400', risk: 'LOW' as RiskLevel },
+    { name: 'Mullaitivu Branch', region: 'NORTH', size: 'C' as EntitySize, cost: '400', risk: 'LOW' as RiskLevel },
+    { name: 'Kilinochchi Branch', region: 'NORTH', size: 'C' as EntitySize, cost: '400', risk: 'LOW' as RiskLevel },
+  ];
+
+  branchData.forEach((branch, index) => {
+    entities.push({
+      entityId: generateEntityId(),
+      entityName: branch.name,
+      entityType: 'Branch',
+      entitySize: branch.size,
+      costCentre: branch.cost,
+      email: `${branch.name.toLowerCase().replace(/\s+/g, '.')}@boc.lk`,
+      auditTeamType: branch.region as AuditTeamType,
+      officialTravelDays: branch.region === 'HO' ? 0 : Math.floor(Math.random() * 3) + 1,
+      riskLevel: branch.risk,
+      status: index < 23 ? 'Active' : 'Under Review',
+      lastAuditDate: `2024-${String((index % 12) + 1).padStart(2, '0')}-${String((index % 28) + 1).padStart(2, '0')}`,
+      nextAuditDate: `2025-${String(((index + 3) % 12) + 1).padStart(2, '0')}-${String((index % 28) + 1).padStart(2, '0')}`,
+      parentEntityId: 'EN000001',
+      controllerEntityId: `EN${String((index % 10) + 2).padStart(6, '0')}`,
+      createdAt: '2020-02-01',
+      updatedAt: '2025-01-08',
+      version: 3 + (index % 5),
+      createdBy: 'System',
+      updatedBy: 'AU001',
+      totalAudits: 10 + index,
+      openFindings: index % 6,
+      closedFindings: 30 + index * 2,
+      pendingActions: index % 3,
     });
-  }
-  
-  return audits;
-}
+  });
 
-// Generate audit history for entity
-function generateAuditHistory(entityId: string): AuditHistoryItem[] {
-  const count = Math.floor(Math.random() * 5) + 2;
-  const history: AuditHistoryItem[] = [];
+  // System entities
+  const systemNames = [
+    'Core Banking System', 'ATM Network', 'Internet Banking', 'Mobile Banking App',
+    'SWIFT Gateway', 'Card Management System', 'Loan Origination System', 'Treasury Management',
+    'HR Management System', 'Document Management System', 'Anti-Money Laundering System',
+    'Customer Relationship Management', 'Business Intelligence Platform', 'Disaster Recovery System'
+  ];
+
+  systemNames.forEach((name, index) => {
+    entities.push({
+      entityId: generateEntityId(),
+      entityName: name,
+      entityType: 'System',
+      entitySize: 'BANK',
+      costCentre: '55',
+      email: `${name.toLowerCase().replace(/\s+/g, '.')}@boc.lk`,
+      auditTeamType: 'HO',
+      officialTravelDays: 0,
+      riskLevel: index < 5 ? 'CRITICAL' : index < 9 ? 'HIGH' : 'MEDIUM',
+      status: 'Active',
+      lastAuditDate: `2024-${String((index % 12) + 1).padStart(2, '0')}-10`,
+      nextAuditDate: `2025-${String(((index + 4) % 12) + 1).padStart(2, '0')}-10`,
+      parentEntityId: 'EN000003', // IT Division
+      controllerEntityId: null,
+      createdAt: '2020-03-01',
+      updatedAt: '2025-01-09',
+      version: 8 + index,
+      createdBy: 'System',
+      updatedBy: 'AU001',
+      totalAudits: 15 + index,
+      openFindings: index % 4,
+      closedFindings: 40 + index * 3,
+      pendingActions: index % 5,
+    });
+  });
+
+  // ISL (Island-wide Service Locations) entities
+  const islData = [
+    { name: 'Colombo Fort ISL', region: 'WEST', size: 'A' as EntitySize },
+    { name: 'Bambalapitiya ISL', region: 'WEST', size: 'B' as EntitySize },
+    { name: 'Dehiwala ISL', region: 'WEST', size: 'B' as EntitySize },
+    { name: 'Nugegoda ISL', region: 'WEST', size: 'C' as EntitySize },
+    { name: 'Maharagama ISL', region: 'WEST', size: 'C' as EntitySize },
+    { name: 'Moratuwa ISL', region: 'WEST', size: 'B' as EntitySize },
+    { name: 'Panadura ISL', region: 'WEST', size: 'C' as EntitySize },
+    { name: 'Horana ISL', region: 'WEST', size: 'C' as EntitySize },
+  ];
+
+  islData.forEach((isl, index) => {
+    entities.push({
+      entityId: generateEntityId(),
+      entityName: isl.name,
+      entityType: 'ISL',
+      entitySize: isl.size,
+      costCentre: '650',
+      email: `${isl.name.toLowerCase().replace(/\s+/g, '.')}@boc.lk`,
+      auditTeamType: isl.region as AuditTeamType,
+      officialTravelDays: 1,
+      riskLevel: 'LOW',
+      status: 'Active',
+      lastAuditDate: `2024-${String((index % 12) + 1).padStart(2, '0')}-20`,
+      nextAuditDate: `2025-${String(((index + 6) % 12) + 1).padStart(2, '0')}-20`,
+      parentEntityId: `EN${String(12 + (index % 8)).padStart(6, '0')}`, // Parent branch
+      controllerEntityId: null,
+      createdAt: '2021-01-01',
+      updatedAt: '2025-01-07',
+      version: 2,
+      createdBy: 'System',
+      updatedBy: 'AU001',
+      totalAudits: 5 + index,
+      openFindings: 0,
+      closedFindings: 15 + index,
+      pendingActions: 0,
+    });
+  });
+
+  // PO (Provincial Offices) entities
+  const poData = [
+    { name: 'Western Province Office', team: 'WEST' as AuditTeamType },
+    { name: 'Central Province Office', team: 'CENTRAL' as AuditTeamType },
+    { name: 'Southern Province Office', team: 'SOUTH' as AuditTeamType },
+    { name: 'Northern Province Office', team: 'NORTH' as AuditTeamType },
+    { name: 'Eastern Province Office', team: 'EAST' as AuditTeamType },
+    { name: 'Uva Province Office', team: 'UVA' as AuditTeamType },
+  ];
+
+  poData.forEach((po, index) => {
+    entities.push({
+      entityId: generateEntityId(),
+      entityName: po.name,
+      entityType: 'PO',
+      entitySize: 'BANK',
+      costCentre: '700',
+      email: `${po.name.toLowerCase().replace(/\s+/g, '.')}@boc.lk`,
+      auditTeamType: po.team,
+      officialTravelDays: 2,
+      riskLevel: 'MEDIUM',
+      status: 'Active',
+      lastAuditDate: `2024-${String((index % 12) + 1).padStart(2, '0')}-05`,
+      nextAuditDate: `2025-${String(((index + 6) % 12) + 1).padStart(2, '0')}-05`,
+      parentEntityId: 'EN000001',
+      controllerEntityId: null,
+      createdAt: '2020-01-20',
+      updatedAt: '2025-01-06',
+      version: 4,
+      createdBy: 'System',
+      updatedBy: 'AU001',
+      totalAudits: 12,
+      openFindings: 1,
+      closedFindings: 35,
+      pendingActions: 2,
+    });
+  });
+
+  return entities;
+};
+
+export const auditEntitiesData = generateMockEntities();
+
+// Calculate comprehensive statistics
+export const getEntityStats = () => {
+  const entities = auditEntitiesData;
+  const now = new Date();
+
+  return {
+    total: entities.length,
+    byType: {
+      Bank: entities.filter(e => e.entityType === 'Bank').length,
+      HOD: entities.filter(e => e.entityType === 'HOD').length,
+      PO: entities.filter(e => e.entityType === 'PO').length,
+      Branch: entities.filter(e => e.entityType === 'Branch').length,
+      System: entities.filter(e => e.entityType === 'System').length,
+      ISL: entities.filter(e => e.entityType === 'ISL').length,
+    },
+    byRisk: {
+      CRITICAL: entities.filter(e => e.riskLevel === 'CRITICAL').length,
+      HIGH: entities.filter(e => e.riskLevel === 'HIGH').length,
+      MEDIUM: entities.filter(e => e.riskLevel === 'MEDIUM').length,
+      LOW: entities.filter(e => e.riskLevel === 'LOW').length,
+    },
+    byTeam: {
+      HO: entities.filter(e => e.auditTeamType === 'HO').length,
+      UVA: entities.filter(e => e.auditTeamType === 'UVA').length,
+      NORTH: entities.filter(e => e.auditTeamType === 'NORTH').length,
+      SOUTH: entities.filter(e => e.auditTeamType === 'SOUTH').length,
+      EAST: entities.filter(e => e.auditTeamType === 'EAST').length,
+      WEST: entities.filter(e => e.auditTeamType === 'WEST').length,
+      CENTRAL: entities.filter(e => e.auditTeamType === 'CENTRAL').length,
+    },
+    byCostCentre: costCentres.reduce((acc, cc) => {
+      acc[cc] = entities.filter(e => e.costCentre === cc).length;
+      return acc;
+    }, {} as Record<string, number>),
+    bySize: {
+      BANK: entities.filter(e => e.entitySize === 'BANK').length,
+      SG: entities.filter(e => e.entitySize === 'SG').length,
+      A: entities.filter(e => e.entitySize === 'A').length,
+      B: entities.filter(e => e.entitySize === 'B').length,
+      C: entities.filter(e => e.entitySize === 'C').length,
+    },
+    byStatus: {
+      Active: entities.filter(e => e.status === 'Active').length,
+      Inactive: entities.filter(e => e.status === 'Inactive').length,
+      'Under Review': entities.filter(e => e.status === 'Under Review').length,
+      Deactivated: entities.filter(e => e.status === 'Deactivated').length,
+    },
+    totalFindings: entities.reduce((sum, e) => sum + e.openFindings + e.closedFindings, 0),
+    openFindings: entities.reduce((sum, e) => sum + e.openFindings, 0),
+    pendingActions: entities.reduce((sum, e) => sum + e.pendingActions, 0),
+    overdueAudits: entities.filter(e => e.nextAuditDate && new Date(e.nextAuditDate) < now).length,
+    upcomingAudits: entities.filter(e => {
+      if (!e.nextAuditDate) return false;
+      const nextDate = new Date(e.nextAuditDate);
+      const thirtyDaysFromNow = new Date();
+      thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+      return nextDate >= now && nextDate <= thirtyDaysFromNow;
+    }).length,
+  };
+};
+
+// Generate audit history for an entity
+export const generateAuditHistory = (entityId: string): AuditHistoryItem[] => {
+  const years = [2024, 2023, 2022, 2021];
+  const auditTypes = ['Full Audit', 'Follow-up Audit', 'Special Investigation', 'Compliance Review', 'IT Audit'];
+  const auditors = ['K. Perera', 'S. Fernando', 'R. Silva', 'M. Jayawardena', 'A. Wickramasinghe'];
   
-  for (let i = 0; i < count; i++) {
-    const startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - (i + 1) * 3);
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + Math.floor(Math.random() * 14) + 5);
-    
-    const findings = Math.floor(Math.random() * 12) + 1;
+  return years.slice(0, 3 + Math.floor(Math.random() * 2)).map((year, index) => {
+    const findings = Math.floor(Math.random() * 15) + 1;
+    const critical = Math.floor(Math.random() * Math.min(3, findings));
+    const high = Math.floor(Math.random() * Math.min(5, findings - critical));
+    const medium = Math.floor(Math.random() * (findings - critical - high));
+    const low = findings - critical - high - medium;
     const recommendations = findings + Math.floor(Math.random() * 5);
     
-    history.push({
-      id: `AH-${entityId}-${String(i + 1).padStart(3, '0')}`,
-      auditType: auditTypes[Math.floor(Math.random() * auditTypes.length)],
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
-      leadAuditor: `Auditor ${Math.floor(Math.random() * 10) + 1}`,
-      teamSize: Math.floor(Math.random() * 4) + 2,
-      findings,
-      criticalFindings: Math.floor(Math.random() * Math.min(findings, 3)),
-      recommendations,
-      implementedRecommendations: Math.floor(Math.random() * recommendations),
-      rating: ratings[Math.floor(Math.random() * ratings.length)],
-      reportLink: `#/reports/${entityId}/${i + 1}`,
-    });
-  }
-  
-  return history;
-}
-
-// Generate key contacts
-function generateKeyContacts(entityType: string): { name: string; role: string; email: string; phone: string }[] {
-  const roles = entityType === 'Branch' 
-    ? ['Branch Manager', 'Operations Head', 'Compliance Officer', 'Risk Coordinator']
-    : entityType === 'IT System'
-    ? ['System Owner', 'Technical Lead', 'Security Officer', 'Change Manager']
-    : ['Relationship Manager', 'Credit Analyst', 'Portfolio Manager', 'Recovery Officer'];
-  
-  return roles.slice(0, 3).map((role, index) => ({
-    name: owners[(index + Math.floor(Math.random() * 5)) % owners.length].name,
-    role,
-    email: `${role.toLowerCase().replace(' ', '.')}${Math.floor(Math.random() * 100)}@boc.lk`,
-    phone: `+94 11 ${Math.floor(Math.random() * 9000000) + 1000000}`,
-  }));
-}
-
-// Generate entity code from name
-function generateCode(name: string, entityType: string): string {
-  const prefix = entityType === 'Branch' ? 'BR' : entityType === 'IT System' ? 'IT' : 'CUS';
-  const words = name.split(' ').slice(0, 3).map(w => w[0]?.toUpperCase() || '').join('');
-  return `${prefix}-${words}`;
-}
-
-// Transform risk entities to audit entities with full details
-export const transformToAuditEntities = (): AuditEntity[] => {
-  return riskEntities.slice(0, 50).map((entity, index) => {
-    const owner = owners[index % owners.length];
-    const complianceStatuses: ComplianceStatus[] = ['Compliant', 'Non-Compliant', 'Pending Review', 'Remediation Required'];
-    const entityStatuses: EntityStatus[] = ['Active', 'Inactive', 'Under Review', 'Suspended'];
-    const frequencies: AuditEntity['auditFrequency'][] = ['Monthly', 'Quarterly', 'Semi-Annual', 'Annual'];
-    
-    const frequency = entity.riskLevel === 'Extreme' 
-      ? 'Monthly' 
-      : entity.riskLevel === 'High' 
-      ? 'Quarterly' 
-      : entity.riskLevel === 'Medium' 
-      ? 'Semi-Annual' 
-      : 'Annual';
-    
-    const additionalInfo: Record<string, string> = {};
-    if (entity.entityType === 'Branch') {
-      additionalInfo['Loan Portfolio'] = entity.loanPortfolio;
-      additionalInfo['Deposit Base'] = entity.depositBase;
-      additionalInfo['NPL Ratio'] = entity.nplRatio;
-      additionalInfo['Staff Count'] = String(entity.staffCount);
-    } else if (entity.entityType === 'IT System') {
-      additionalInfo['Uptime'] = entity.uptime;
-      additionalInfo['Last Patch Date'] = entity.lastPatchDate;
-      additionalInfo['Critical Vulnerabilities'] = String(entity.criticalVulnerabilities);
-      additionalInfo['Vendor'] = entity.vendorName;
-    } else {
-      additionalInfo['Total Exposure'] = entity.totalExposure;
-      additionalInfo['Facility Type'] = entity.facilityType;
-      additionalInfo['Collateral Value'] = entity.collateralValue;
-      additionalInfo['Industry'] = entity.industry;
-    }
-    
     return {
-      id: entity.id,
-      code: generateCode(entity.name, entity.entityType),
-      name: entity.name,
-      entityType: entity.entityType,
-      category: entity.category,
-      region: entity.region,
-      riskLevel: entity.riskLevel,
-      riskScore: entity.overallRiskScore,
-      complianceStatus: complianceStatuses[Math.floor(Math.random() * complianceStatuses.length)],
-      status: entity.status === 'Active' ? 'Active' : entity.status === 'Under Review' ? 'Under Review' : 'Active',
-      lastAuditDate: entity.lastAssessment,
-      nextAuditDate: entity.nextReassessment,
-      assignedAuditor: entity.assignedAuditor,
-      ownerName: owner.name,
-      ownerEmail: owner.email,
-      ownerDepartment: owner.department,
-      description: `${entity.entityType} entity for ${entity.name} in ${entity.region}. Currently ${entity.status.toLowerCase()} with ${entity.riskLevel.toLowerCase()} risk level.`,
-      createdAt: getRandomPastDate(730),
-      updatedAt: getRandomPastDate(30),
-      version: Math.floor(Math.random() * 5) + 1,
-      auditFrequency: frequency,
-      riskFactors: entity.riskFactors,
-      trend: entity.trend,
-      documents: generateDocuments(entity.id),
-      scheduledAudits: generateScheduledAudits(entity.id, entity.riskLevel),
-      auditHistory: generateAuditHistory(entity.id),
-      keyContacts: generateKeyContacts(entity.entityType),
-      additionalInfo,
+      id: `AH-${entityId}-${year}`,
+      entityId,
+      auditType: auditTypes[index % auditTypes.length],
+      auditYear: year,
+      startDate: `${year}-${String((index * 3 + 1) % 12 + 1).padStart(2, '0')}-01`,
+      endDate: `${year}-${String((index * 3 + 1) % 12 + 1).padStart(2, '0')}-${15 + Math.floor(Math.random() * 10)}`,
+      leadAuditor: auditors[index % auditors.length],
+      teamMembers: auditors.slice(0, 2 + Math.floor(Math.random() * 3)),
+      findings,
+      criticalFindings: critical,
+      highFindings: high,
+      mediumFindings: medium,
+      lowFindings: low,
+      recommendations,
+      implementedRecommendations: Math.floor(recommendations * (0.6 + Math.random() * 0.3)),
+      rating: ['Satisfactory', 'Needs Improvement', 'Unsatisfactory', 'Critical'][Math.floor(Math.random() * 4)] as AuditHistoryItem['rating'],
+      status: index === 0 ? 'Completed' : 'Completed',
+      reportUrl: `/reports/${entityId}/${year}`,
     };
   });
 };
 
-export const auditEntitiesData = transformToAuditEntities();
-
-// Calculate statistics
-export const getEntityStats = () => {
-  const entities = auditEntitiesData;
+// Generate documents for an entity
+export const generateEntityDocuments = (entityId: string): EntityDocument[] => {
+  const docTypes: EntityDocument['type'][] = ['Policy', 'Procedure', 'Report', 'Certificate', 'Assessment'];
+  const categories = ['Compliance', 'Operations', 'Risk', 'Audit', 'Security'];
+  const uploaders = ['K. Perera', 'S. Fernando', 'R. Silva'];
   
-  return {
-    total: entities.length,
-    byRisk: {
-      extreme: entities.filter(e => e.riskLevel === 'Extreme').length,
-      high: entities.filter(e => e.riskLevel === 'High').length,
-      medium: entities.filter(e => e.riskLevel === 'Medium').length,
-      low: entities.filter(e => e.riskLevel === 'Low').length,
-    },
-    byType: {
-      branch: entities.filter(e => e.entityType === 'Branch').length,
-      itSystem: entities.filter(e => e.entityType === 'IT System').length,
-      customer: entities.filter(e => e.entityType === 'High Value Customer').length,
-    },
-    byCompliance: {
-      compliant: entities.filter(e => e.complianceStatus === 'Compliant').length,
-      nonCompliant: entities.filter(e => e.complianceStatus === 'Non-Compliant').length,
-      pending: entities.filter(e => e.complianceStatus === 'Pending Review').length,
-      remediation: entities.filter(e => e.complianceStatus === 'Remediation Required').length,
-    },
-    byStatus: {
-      active: entities.filter(e => e.status === 'Active').length,
-      inactive: entities.filter(e => e.status === 'Inactive').length,
-      underReview: entities.filter(e => e.status === 'Under Review').length,
-      suspended: entities.filter(e => e.status === 'Suspended').length,
-    },
-    avgRiskScore: Math.round(entities.reduce((sum, e) => sum + e.riskScore, 0) / entities.length * 10) / 10,
-    upcomingAudits: entities.reduce((sum, e) => sum + e.scheduledAudits.length, 0),
-    overdueEntities: entities.filter(e => new Date(e.nextAuditDate) < new Date()).length,
-  };
+  return Array.from({ length: 3 + Math.floor(Math.random() * 5) }, (_, index) => ({
+    id: `DOC-${entityId}-${String(index + 1).padStart(3, '0')}`,
+    entityId,
+    name: `${docTypes[index % docTypes.length]} Document ${index + 1}`,
+    type: docTypes[index % docTypes.length],
+    category: categories[index % categories.length],
+    uploadDate: `2024-${String((index % 12) + 1).padStart(2, '0')}-${String((index % 28) + 1).padStart(2, '0')}`,
+    uploadedBy: uploaders[index % uploaders.length],
+    fileSize: `${Math.floor(Math.random() * 5000) + 100} KB`,
+    version: Math.floor(Math.random() * 5) + 1,
+    status: index === 0 ? 'Current' : index < 3 ? 'Current' : 'Archived',
+  }));
 };
 
-// Recent activity mock data
+// Recent activity for dashboard
 export const recentEntityActivity = [
-  { id: 1, action: 'Entity Created', entity: 'Colombo Main Branch', user: 'Mahendra Rajapaksa', timestamp: '2025-01-08 14:32', type: 'create' },
-  { id: 2, action: 'Risk Level Updated', entity: 'Core Banking System', user: 'Kumudu Perera', timestamp: '2025-01-08 12:15', type: 'update' },
-  { id: 3, action: 'Document Uploaded', entity: 'Ceylon Petroleum Corporation', user: 'Sanjaya Fernando', timestamp: '2025-01-08 10:45', type: 'document' },
-  { id: 4, action: 'Audit Scheduled', entity: 'Kandy Branch', user: 'Dilini Jayawardena', timestamp: '2025-01-07 16:20', type: 'audit' },
-  { id: 5, action: 'Compliance Status Changed', entity: 'ATM Network', user: 'Ruwan Silva', timestamp: '2025-01-07 14:55', type: 'compliance' },
-  { id: 6, action: 'Entity Deactivated', entity: 'Legacy Payment Gateway', user: 'Amali Wickramasinghe', timestamp: '2025-01-07 11:30', type: 'status' },
-  { id: 7, action: 'Owner Reassigned', entity: 'John Keells Holdings', user: 'Pradeep Kumarasiri', timestamp: '2025-01-06 15:40', type: 'assign' },
-  { id: 8, action: 'Risk Assessment Completed', entity: 'Mobile Banking App', user: 'Nishantha Bandara', timestamp: '2025-01-06 09:20', type: 'assessment' },
+  { id: 1, action: 'Entity Created', entityName: 'New Colombo Extension', entityId: 'EN000070', user: 'K. Perera', timestamp: '2025-01-10 14:32', type: 'create' },
+  { id: 2, action: 'Risk Level Updated', entityName: 'Kandy City Branch', entityId: 'EN000013', user: 'S. Fernando', timestamp: '2025-01-10 12:15', type: 'update' },
+  { id: 3, action: 'Audit Completed', entityName: 'Core Banking System', entityId: 'EN000037', user: 'R. Silva', timestamp: '2025-01-10 10:45', type: 'audit' },
+  { id: 4, action: 'Status Changed', entityName: 'Legacy Payment System', entityId: 'EN000045', user: 'M. Jayawardena', timestamp: '2025-01-09 16:20', type: 'status' },
+  { id: 5, action: 'Document Uploaded', entityName: 'IT Division', entityId: 'EN000003', user: 'A. Wickramasinghe', timestamp: '2025-01-09 14:55', type: 'document' },
+  { id: 6, action: 'Entity Deactivated', entityName: 'Old ATM Network', entityId: 'EN000048', user: 'K. Perera', timestamp: '2025-01-09 11:30', type: 'deactivate' },
+  { id: 7, action: 'Audit Scheduled', entityName: 'Galle Fort Branch', entityId: 'EN000014', user: 'S. Fernando', timestamp: '2025-01-08 15:40', type: 'schedule' },
+  { id: 8, action: 'Findings Resolved', entityName: 'Treasury Division', entityId: 'EN000008', user: 'R. Silva', timestamp: '2025-01-08 09:20', type: 'resolve' },
 ];
 
-export const entityCategories = ['Branch Network', 'Information Technology', 'Corporate Banking', 'Retail Banking', 'Treasury', 'Compliance'];
-export const entityRegions = ['Western Province', 'Central Province', 'Southern Province', 'Northern Province', 'Eastern Province', 'North Western Province', 'Sabaragamuwa Province', 'Uva Province', 'North Central Province', 'Head Office'];
+// Audit coverage timeline data
+export const auditCoverageTimeline = [
+  { month: 'Jan', completed: 8, scheduled: 12, overdue: 2 },
+  { month: 'Feb', completed: 10, scheduled: 10, overdue: 1 },
+  { month: 'Mar', completed: 12, scheduled: 15, overdue: 3 },
+  { month: 'Apr', completed: 9, scheduled: 11, overdue: 2 },
+  { month: 'May', completed: 11, scheduled: 14, overdue: 1 },
+  { month: 'Jun', completed: 7, scheduled: 10, overdue: 4 },
+  { month: 'Jul', completed: 0, scheduled: 13, overdue: 0 },
+  { month: 'Aug', completed: 0, scheduled: 11, overdue: 0 },
+  { month: 'Sep', completed: 0, scheduled: 16, overdue: 0 },
+  { month: 'Oct', completed: 0, scheduled: 12, overdue: 0 },
+  { month: 'Nov', completed: 0, scheduled: 9, overdue: 0 },
+  { month: 'Dec', completed: 0, scheduled: 8, overdue: 0 },
+];
+
+// Check entity name uniqueness
+export const isEntityNameUnique = (name: string, excludeId?: string): boolean => {
+  return !auditEntitiesData.some(e => 
+    e.entityName.toLowerCase() === name.toLowerCase() && e.entityId !== excludeId
+  );
+};
+
+// Get next entity ID
+export const getNextEntityId = (): string => {
+  const maxId = Math.max(...auditEntitiesData.map(e => parseInt(e.entityId.replace('EN', ''))));
+  return `EN${String(maxId + 1).padStart(6, '0')}`;
+};
